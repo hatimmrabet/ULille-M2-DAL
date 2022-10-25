@@ -1,0 +1,26 @@
+{
+    "banques" : [
+        {
+            "nom": "Banque A",
+            "frais": 0.5,
+            "comptes" : [
+                {
+                    "numeroFornisseur": "123456789",
+                    "solde": 1000,
+                    "produits" : [
+                        {
+                            "nom": "Produit A",
+                            "prix": 10,
+                            "quantite": 100
+                        },
+                        {
+                            "nom": "Produit B",
+                            "prix": 20,
+                            "quantite": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]   
+}
