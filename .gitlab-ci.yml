@@ -14,3 +14,12 @@ test:
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS test'
+
+java-build:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS package -DskipTests=true
+  artifacts:
+    name: "Jar for $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
+    paths:
+      - "target/banque-0.0.1-SNAPSHOT.jar"
