@@ -23,3 +23,14 @@ java-build:
     name: "Jar for $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
     paths:
       - "target/banque-0.0.1-SNAPSHOT.jar"
+
+docker-build:
+  image: docker:20.10.16
+  stage: build
+  needs: ["java-build"]
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/dal-banque/dal-banque:$CI_COMMIT_REF_SLUG target/
+    - docker push $CI_REGISTRY/dal-banque/dal-banque:$CI_COMMIT_REF_SLUG
