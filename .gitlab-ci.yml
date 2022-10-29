@@ -33,7 +33,7 @@ docker-build:
     DOCKER_TLS_CERTDIR: ""
 
   stage: deploy
-  needs: ["unit-tests"]
+  needs: ["unit-tests", "java-build"]
   services:
     - docker:20.10.16-dind
   before_script:
@@ -41,3 +41,6 @@ docker-build:
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:latest"
+  dependencies:
+    - java-build
+
