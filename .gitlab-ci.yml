@@ -4,16 +4,26 @@ variables:
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
 
-image: maven:3.8-openjdk-17
+image: maven:3.8-openjdk-17-slim
 
 cache:
   paths:
     - .m2/repository
 
+java-compile:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS compile -DskipTests=true
+  artifacts:
+    expire_in: 15 min
+    paths: 
+      - target/  
+
 unit-tests:
   stage: test
-  needs: ["java-build"]
+  needs: ["java-compile"]
   script:
+    - find . -name "*.class" -exec touch {} \+
     - 'mvn $MAVEN_CLI_OPTS test'
   artifacts:
     when: always
@@ -22,9 +32,11 @@ unit-tests:
         - target/surefire-reports/TEST-*.xml
         - target/failsafe-reports/TEST-*.xml
 
-java-build:
-  stage: build
+java-package:
+  stage: deploy
+  needs: ["unit-tests"]
   script:
+    - find . -name "*.class" -exec touch {} \+
     - mvn $MAVEN_CLI_OPTS package -DskipTests=true
   artifacts:
     name: "Jar for $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
@@ -39,7 +51,7 @@ docker-build:
     DOCKER_TLS_CERTDIR: ""
 
   stage: deploy
-  needs: ["unit-tests", "java-build"]
+  needs: ["java-package"]
   services:
     - docker:20.10.16-dind
   before_script:
@@ -48,5 +60,5 @@ docker-build:
     - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:latest"
   dependencies:
-    - java-build
+    - java-package
 
