@@ -15,6 +15,12 @@ unit-tests:
   needs: ["java-build"]
   script:
     - 'mvn $MAVEN_CLI_OPTS test'
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
 
 java-build:
   stage: build
