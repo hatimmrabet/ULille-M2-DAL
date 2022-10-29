@@ -30,7 +30,8 @@ docker-build:
   needs: ["java-build"]
   services:
     - docker:20.10.16-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/dal-banque/dal-banque:$CI_COMMIT_REF_SLUG target/
-    - docker push $CI_REGISTRY/dal-banque/dal-banque:$CI_COMMIT_REF_SLUG
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$CI_REGISTRY_IMAGE:latest"
