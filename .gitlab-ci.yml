@@ -82,7 +82,7 @@ deploy-preprod:
     - ssh-keyscan -H $PREPROD_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker pull $CI_REGISTRY_IMAGE:latest"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker container rm -f $CI_REGISTRY_IMAGE || true"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker run -d -p 8080:8080 --name dal-banque $CI_REGISTRY_IMAGE:latest"
+    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
+    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker pull $CI_REGISTRY_IMAGE:latest"
+    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker container rm -f $CI_REGISTRY_IMAGE || true"
+    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker run -d -p 8080:8080 --name dal-banque $CI_REGISTRY_IMAGE:latest"
