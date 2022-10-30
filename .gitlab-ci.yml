@@ -76,7 +76,7 @@ deploy-preprod:
     - apk update && apk add openssh-client
   script:
     - eval $(ssh-agent -s)
-    - echo "$PREPROD_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo "${PREPROD_PRIVATE_KEY}" | ssh-add -
     - mkdir -p ~/.ssh
     - ssh-keyscan -H $PREPROD_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
