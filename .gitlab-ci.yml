@@ -98,7 +98,7 @@ deploy-to-staging:
   extends: .deploy
   needs: ["docker-build-to-staging"]
   rules:
-     - if: '$CI_COMMIT_BRANCH == "master"' # or any other condition
+     - if: '$CI_COMMIT_BRANCH == "add-build-task"' # or any other condition
   environment: "staging"
 
 deploy-to-production:
