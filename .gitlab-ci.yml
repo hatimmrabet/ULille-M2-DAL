@@ -85,7 +85,7 @@ java-package:
 docker-build-to-staging:
   extends: .docker-build
   rules:
-     - if: '$CI_COMMIT_BRANCH == "master"' # or any other condition
+     - if: '$CI_COMMIT_BRANCH == "add-build-task"' # or any other condition
   environment: "staging"
 
 docker-build-to-production:
