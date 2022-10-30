@@ -35,6 +35,8 @@ unit-tests:
 java-package:
   stage: deploy
   needs: ["unit-tests"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "production"
   script:
     - find . -name "*.class" -exec touch {} \+
     - mvn $MAVEN_CLI_OPTS package -DskipTests=true
