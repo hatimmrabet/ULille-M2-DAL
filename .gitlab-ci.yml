@@ -43,7 +43,7 @@ java-package:
     paths:
       - "target/banque-0.0.1-SNAPSHOT.jar"
 
-docker-build:
+docker-build-preprod:
   image: docker:20.10.16
   variables:
     DOCKER_HOST: tcp://docker:2375 
@@ -52,6 +52,9 @@ docker-build:
 
   stage: deploy
   needs: ["java-package"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "add-build-task"'
+      when: always
   services:
     - docker:20.10.16-dind
   before_script:
@@ -65,11 +68,12 @@ docker-build:
 deploy:
   image: alpine:latest
   stage: deploy
+  needs: ["docker-build-preprod"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "add-build-task"'
       when: always
   script:
-    - chmod og= $PREPROD_PRIVATE_KEY
+    - chmod 600 $PREPROD_PRIVATE_KEY
     - apk update && apk add openssh-client
     - ssh -i $PREPROD_PRIVATE_KEY -o StrictHostKeyChecking=no $PREPROD_USER@$PREPROD_IP "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
     - ssh -i $PREPROD_PRIVATE_KEY -o StrictHostKeyChecking=no $PREPROD_USER@$PREPROD_IP "docker pull $CI_REGISTRY_IMAGE:latest"
