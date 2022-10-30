@@ -65,18 +65,22 @@ docker-build-preprod:
   dependencies:
     - java-package
 
-deploy:
+deploy-preprod:
   image: alpine:latest
   stage: deploy
   needs: ["docker-build-preprod"]
-  variables:
-    PREPROD_PRIVATE_KEY: ${PREPROD_PRIVATE_KEY}
   rules:
     - if: '$CI_COMMIT_BRANCH == "add-build-task"'
       when: always
-  script:
-    - chmod 600 $PREPROD_PRIVATE_KEY
+  before_script:
     - apk update && apk add openssh-client
+  script:
+    - eval $(ssh-agent -s)
+    - echo "$PREPROD_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H $PREPROD_IP >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
     - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
     - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker pull $CI_REGISTRY_IMAGE:latest"
     - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP}" "docker container rm -f $CI_REGISTRY_IMAGE || true"
