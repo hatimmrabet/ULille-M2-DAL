@@ -36,7 +36,7 @@ java-package:
   stage: deploy
   needs: ["unit-tests"]
   rules:
-    - if: $CI_COMMIT_BRANCH == "add-build-task" || $CI_COMMIT_BRANCH == "production"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "production"
   script:
     - find . -name "*.class" -exec touch {} \+
     - mvn $MAVEN_CLI_OPTS package -DskipTests=true
@@ -91,7 +91,7 @@ docker-build-to-staging:
 docker-build-to-production:
   extends: .docker-build
   rules:
-     - if: '$CI_COMMIT_BRANCH == "add-build-task"'
+     - if: '$CI_COMMIT_BRANCH == "production"'
   environment: "production"
 
 deploy-to-staging:
@@ -105,6 +105,6 @@ deploy-to-production:
   extends: .deploy
   needs: ["docker-build-to-production"]
   rules:
-     - if: '$CI_COMMIT_BRANCH == "add-build-task"'
+     - if: '$CI_COMMIT_BRANCH == "production"'
        when: manual
   environment: "production"
