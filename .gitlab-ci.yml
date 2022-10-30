@@ -43,7 +43,7 @@ java-package:
     paths:
       - "target/banque-0.0.1-SNAPSHOT.jar"
 
-docker-build-preprod:
+.docker-build:
   image: docker:20.10.16
   variables:
     DOCKER_HOST: tcp://docker:2375 
@@ -52,37 +52,57 @@ docker-build-preprod:
 
   stage: deploy
   needs: ["java-package"]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "add-build-task"'
-      when: always
   services:
     - docker:20.10.16-dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
-    - docker push "$CI_REGISTRY_IMAGE:latest"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest" .
+    - docker push "$CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest"
   dependencies:
     - java-package
 
-deploy-preprod:
+.deploy:
   image: alpine:latest
   stage: deploy
-  needs: ["docker-build-preprod"]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "add-build-task"'
-      when: always
   before_script:
     - apk update && apk add openssh-client
   script:
     - eval $(ssh-agent -s)
-    - chmod 600 $PREPROD_PRIVATE_KEY
-    - ssh-add $PREPROD_PRIVATE_KEY
+    - chmod 600 $PRIVATE_KEY
+    - ssh-add $PRIVATE_KEY
     - mkdir -p ~/.ssh
-    - ssh-keyscan -H $PREPROD_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker pull $CI_REGISTRY_IMAGE:latest"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker container rm -f $CI_REGISTRY_IMAGE || true"
-    - ssh -i "$PREPROD_PRIVATE_KEY" -o StrictHostKeyChecking=no "${PREPROD_USER}@$PREPROD_IP" "docker run -d -p 8080:8080 --name dal-banque $CI_REGISTRY_IMAGE:latest"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker pull $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker container rm -f $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME || true"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker run -d -p 8080:8080 --name dal-banque $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest"
+
+docker-build-to-staging:
+  extends: .docker-build
+  rules:
+     - if: '$CI_COMMIT_BRANCH == "master"' # or any other condition
+  environment: "staging"
+
+docker-build-to-production:
+  extends: .docker-build
+  rules:
+     - if: '$CI_COMMIT_BRANCH == "production"'
+  environment: "production"
+
+deploy-to-staging:
+  extends: .deploy
+  needs: ["docker-build-to-staging"]
+  rules:
+     - if: '$CI_COMMIT_BRANCH == "master"' # or any other condition
+  environment: "staging"
+
+deploy-to-production:
+  extends: .deploy
+  needs: ["docker-build-to-production"]
+  rules:
+     - if: '$CI_COMMIT_BRANCH == "production"'
+       when: manual
+  environment: "production"
