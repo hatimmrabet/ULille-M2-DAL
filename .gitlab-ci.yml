@@ -69,6 +69,8 @@ deploy:
   image: alpine:latest
   stage: deploy
   needs: ["docker-build-preprod"]
+  variables:
+    PREPROD_PRIVATE_KEY: $PREPROD_PRIVATE_KEY
   rules:
     - if: '$CI_COMMIT_BRANCH == "add-build-task"'
       when: always
