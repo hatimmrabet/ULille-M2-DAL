@@ -1,7 +1,5 @@
 package dal.api.banque.services;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +14,9 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private StockService stockService;
+
     public boolean checkIfAccountExists(String name) {
         return accountRepository.existsById(name);
     }
@@ -28,7 +29,7 @@ public class AccountService {
         Account account = new Account();
         account.setName(accountEntry.getName());
         account.setPassword(accountEntry.getPassword());
-        account.setStocks(new ArrayList<>());
+        account.setStocks(stockService.getStocks());
         return account;
     }
 
