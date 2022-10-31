@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dal.api.banque.models.Account;
+import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.repositories.AccountRepository;
 
@@ -19,6 +20,10 @@ public class AccountService {
         return accountRepository.existsById(name);
     }
 
+    public Account getAccount(String name) {
+        return accountRepository.findById(name).get();
+    }
+
     public Account convertAccountEntryToAccount(AccountEntry accountEntry) {
         Account account = new Account();
         account.setName(accountEntry.getName());
@@ -29,6 +34,11 @@ public class AccountService {
 
     public Account createAccount(AccountEntry accountEntry) {
         return accountRepository.save(convertAccountEntryToAccount(accountEntry));
+    }
+
+    public void addStockToAccount(Account account, Stock stock) {
+        account.getStocks().add(stock);
+        accountRepository.save(account);
     }
 
 
