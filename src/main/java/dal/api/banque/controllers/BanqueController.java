@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +67,14 @@ public class BanqueController {
         return ResponseEntity.status(201).body(account);
     }
 
-
+    @PostMapping("/transformation")
+    public ResponseEntity<?> transform( @PathParam("name") String name, @RequestBody Stock stock){
+        if(!accountService.checkIfAccountExists(name))
+            return ResponseEntity.badRequest().body("Account doesn't exist");
+        Account account = accountService.getAccount(name);
+        account.setStocks(accountService.transform(account, stock));
+        accountService.saveAccount(account);
+        return ResponseEntity.ok().body(account);
+    }
 
 }
