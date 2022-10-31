@@ -1,12 +1,17 @@
 package dal.api.banque.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
+import dal.api.banque.models.entry.AccountEntry;
+import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
 
 @RestController
@@ -16,10 +21,21 @@ public class BanqueController {
 
     @Autowired
     private BanqueService banqueService;
+
+    @Autowired
+    private AccountService accountService;
     
-    @PostMapping("/add")
+    @PostMapping
     public Banque addBanque() {
         return banqueService.createBanque();
+    }
+
+    @PostMapping("/accounts")
+    public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry){
+        if(accountService.checkIfAccountExists(accountEntry.getName()))
+            return ResponseEntity.badRequest().body("Account already exists");   
+        Account account = accountService.createAccount(accountEntry);                
+        return ResponseEntity.status(201).body(account);
     }
 
 }
