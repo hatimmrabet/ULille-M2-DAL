@@ -1,13 +1,16 @@
 package dal.api.banque.models;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "stocks")
 public class Stock {
 
     private String name;
     private int quantity;
     private double price;
+    
+    public Stock(String name, int quantity, double price) {
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
+    }
     
     public String getName() {
         return name;
@@ -27,7 +30,5 @@ public class Stock {
     public void setPrice(double price) {
         this.price = price;
     }
-
-    
     
 }
