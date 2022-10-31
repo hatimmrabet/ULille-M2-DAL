@@ -18,16 +18,25 @@ public class BanqueService {
     private BanqueRepository banqueRepository;
 
     public Banque getMyBanque() {
-        return banqueRepository.findById(BANQUE_ID).get();
+        if (banqueRepository.findById(BANQUE_ID).isPresent())
+            return banqueRepository.findById(BANQUE_ID).get();
+        return null;
     }
 
     public Banque createBanque() {
-        Banque notreBanque = new Banque();
-        notreBanque.setId(BANQUE_ID);
-        notreBanque.setName("Banque de France");
-        notreBanque.setAdress("Cité scientifique, Lille");
-        notreBanque.setAccounts(new ArrayList<>());
-        return banqueRepository.save(notreBanque);
+        if (getMyBanque() != null)
+        {
+            return getMyBanque();
+        }
+        else
+        {
+            Banque notreBanque = new Banque();
+            notreBanque.setId(BANQUE_ID);
+            notreBanque.setName("Banque de France");
+            notreBanque.setAdress("Cité scientifique, Lille");
+            notreBanque.setAccounts(new ArrayList<>());
+            return banqueRepository.save(notreBanque);
+        }
     }
 
     public void addAccountToBanque(Account account) {
