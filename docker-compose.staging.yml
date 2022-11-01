@@ -9,7 +9,7 @@ services:
             - mongo_db
         hostname: spring-server
         links:
-            - mongo
+            - mongo_db
 
     mongo_db:
         image: mongo:6.0.2
