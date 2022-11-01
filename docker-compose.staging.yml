@@ -1,0 +1,6 @@
+spring-server:
+        image: benjil/dal-banque-staging:latest
+        ports:
+            - "8080:8080"
+        depends_on:
+            - mongo_db
