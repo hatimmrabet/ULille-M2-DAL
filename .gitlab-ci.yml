@@ -85,7 +85,7 @@ java-package:
 docker-build-to-staging:
   extends: .docker-build
   rules:
-     - if: '$CI_COMMIT_BRANCH == "master"' # or any other condition
+     - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "deploy-mongo-database"'
   environment: "staging"
 
 docker-build-to-production:
