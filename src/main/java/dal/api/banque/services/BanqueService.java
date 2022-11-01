@@ -32,8 +32,8 @@ public class BanqueService {
         {
             Banque notreBanque = new Banque();
             notreBanque.setId(BANQUE_ID);
-            notreBanque.setName("Banque de France");
-            notreBanque.setAdress("Cité scientifique, Lille");
+            notreBanque.setName("Rothschild & Co");
+            notreBanque.setAdress("47 Rue du Faubourg Saint-Honoré, 75008 Paris");
             notreBanque.setAccounts(new ArrayList<>());
             return banqueRepository.save(notreBanque);
         }

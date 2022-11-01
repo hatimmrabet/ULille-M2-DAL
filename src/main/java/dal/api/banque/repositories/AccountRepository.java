@@ -6,4 +6,5 @@ import dal.api.banque.models.Account;
 
 public interface AccountRepository extends MongoRepository<Account, String> {
 
+    boolean existsByName(String name);
 }

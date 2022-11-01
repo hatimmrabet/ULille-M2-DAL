@@ -3,15 +3,24 @@ package dal.api.banque.models;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.annotation.Generated;
 
 @Document(collection = "accounts")
 public class Account {
 
     @Id
+    private String id;
+    @Indexed(unique = true)
     private String name;
     private String password;
     private List<Stock> stocks;
+
+    private int fee;
+
+    private double balance;
     // private List<Operation> operations;
 
     public String getName() {

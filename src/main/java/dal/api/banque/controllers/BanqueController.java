@@ -1,5 +1,7 @@
 package dal.api.banque.controllers;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import javax.websocket.server.PathParam;
@@ -48,8 +50,8 @@ public class BanqueController {
 
 
     @PostMapping("/accounts")
-    public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry){
-        if(accountService.checkIfAccountExists(accountEntry.getName()))
+    public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        if(accountService.checkIfAccountExistsByName(accountEntry.getName()))
             return ResponseEntity.badRequest().body("Account already exists");   
         Account account = accountService.createAccount(accountEntry);
         banqueService.addAccountToBanque(account);           
@@ -58,19 +60,19 @@ public class BanqueController {
 
 
     @PostMapping("/stocks")
-    public ResponseEntity<?> addStockToAccount(@PathParam("name") String name, @RequestBody Stock stock){
-        if(!accountService.checkIfAccountExists(name))
+    public ResponseEntity<?> addStockToAccount(@PathParam("id") String id, @RequestBody Stock stock){
+        if(!accountService.checkIfAccountExistsById(id))
             return ResponseEntity.badRequest().body("Account doesn't exist");
-        Account account = accountService.getAccount(name);
+        Account account = accountService.getAccount(id);
         accountService.addStockToAccount(account, stock);     
         return ResponseEntity.status(201).body(account);
     }
 
     @PostMapping("/transformation")
-    public ResponseEntity<?> transform( @PathParam("name") String name, @RequestBody Stock stock){
-        if(!accountService.checkIfAccountExists(name))
+    public ResponseEntity<?> transform( @PathParam("id") String id, @RequestBody Stock stock){
+        if(!accountService.checkIfAccountExistsById(id))
             return ResponseEntity.badRequest().body("Account doesn't exist");
-        Account account = accountService.getAccount(name);
+        Account account = accountService.getAccount(id);
         account.setStocks(accountService.transform(account, stock));
         accountService.saveAccount(account);
         return ResponseEntity.ok().body(account);

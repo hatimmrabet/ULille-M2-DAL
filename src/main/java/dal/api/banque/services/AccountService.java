@@ -1,5 +1,9 @@
 package dal.api.banque.services;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,9 @@ import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.repositories.AccountRepository;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
 @Service
 public class AccountService {
     
@@ -19,23 +26,28 @@ public class AccountService {
     @Autowired
     private StockService stockService;
 
-    public boolean checkIfAccountExists(String name) {
-        return accountRepository.existsById(name);
+    public boolean checkIfAccountExistsById(String Id) {
+        return accountRepository.existsById(Id);
+    }
+
+    public boolean checkIfAccountExistsByName(String name) {
+        return accountRepository.existsByName(name);
     }
 
     public Account getAccount(String name) {
         return accountRepository.findById(name).get();
     }
 
-    public Account convertAccountEntryToAccount(AccountEntry accountEntry) {
+    public Account convertAccountEntryToAccount(AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Account account = new Account();
         account.setName(accountEntry.getName());
-        account.setPassword(accountEntry.getPassword());
+        String hashedPassword = hashPassword(accountEntry.getPassword());
+        account.setPassword(hashedPassword);
         account.setStocks(stockService.getStocks());
         return account;
     }
 
-    public Account createAccount(AccountEntry accountEntry) {
+    public Account createAccount(AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return accountRepository.save(convertAccountEntryToAccount(accountEntry));
     }
 
@@ -59,12 +71,24 @@ public class AccountService {
             }
         }
         // ajouter le stock produit
-        for(Stock accounStock : account.getStocks()) {
-            if(accounStock.getName().equals(stock.getName())) {
-                accounStock.setQuantity(accounStock.getQuantity() + stock.getQuantity());
+        for(Stock accountStock : account.getStocks()) {
+            if(accountStock.getName().equals(stock.getName())) {
+                accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
             }
         }
         return account.getStocks();
     }
+
+    public String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        //hash password with bcrypt
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = factory.generateSecret(spec).getEncoded();
+        return new String(hash);
+    }
+
 
 }
