@@ -1,9 +1,12 @@
 package dal.api.banque.models;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Map;
 
 public class Quotation
 {
+    @Id
     private String Id;
     private String Seller;
     private String Buyer;
