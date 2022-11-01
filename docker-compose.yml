@@ -9,12 +9,9 @@ services:
             - mongo_db
         hostname: spring-server
         links:
-            - mongo_db
+            - mongo_db:mongo
 
     mongo_db:
         image: mongo:6.0.2
         volumes:
             - './data:/data/db'
-        ports:
-            - "27017:27017"
-        hostname: mongo
