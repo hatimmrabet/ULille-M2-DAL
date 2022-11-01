@@ -1,4 +1,6 @@
-spring-server:
+version: "3.8"
+services:
+    spring-server:
         image: benjil/dal-banque-staging:latest
         ports:
             - "8080:8080"
