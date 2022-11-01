@@ -2,6 +2,7 @@ version: "3.8"
 services:
     spring-server:
         image: benjil/dal-banque-staging:latest
+        restart: always
         ports:
             - "8080:8080"
         depends_on:
