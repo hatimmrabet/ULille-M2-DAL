@@ -1,9 +1,7 @@
 package dal.api.banque.services;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,6 @@ import dal.api.banque.models.Account;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.repositories.AccountRepository;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 @Service
 public class AccountService {
