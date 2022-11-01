@@ -7,6 +7,9 @@ services:
             - "8080:8080"
         depends_on:
             - mongo_db
+        hostname: spring-server
+        links:
+            - mongo
 
     mongo_db:
         image: mongo:6.0.2
@@ -14,3 +17,4 @@ services:
             - './data:/data/db'
         ports:
             - "27017:27017"
+        hostname: mongo
