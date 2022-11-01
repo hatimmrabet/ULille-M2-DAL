@@ -68,7 +68,7 @@ java-package:
   image: alpine:latest
   stage: deploy
   before_script:
-    - apk update && apk add openssh-client
+    - apk update && apk add openssh-client && apk add docker-cli-compose
   script:
     - eval $(ssh-agent -s)
     - chmod 600 $PRIVATE_KEY
@@ -78,9 +78,9 @@ java-package:
     - chmod 644 ~/.ssh/known_hosts
 
     - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker pull $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker container rm -f dal-banque-$CI_ENVIRONMENT_NAME || true"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker run -d -p 8080:8080 --name dal-banque-$CI_ENVIRONMENT_NAME $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME $CI_REGISTRY_IMAGE-$CI_ENVIRONMENT_NAME:latest"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker compose down"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker compose build"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker compose -f docker-compose.yml -f docker-compose.$CI_ENVIRONMENT_NAME.yml up -d"
 
 docker-build-to-staging:
   extends: .docker-build
