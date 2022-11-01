@@ -6,11 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.annotation.Generated;
-
 @Document(collection = "accounts")
 public class Account {
-
     @Id
     private String id;
     @Indexed(unique = true)
@@ -23,6 +20,24 @@ public class Account {
     private double balance;
     // private List<Operation> operations;
 
+    public String getId() {
+        return id;
+    }
+    public int getFee() {
+        return fee;
+    }
+    public void setFee(int fee) {
+        this.fee = fee;
+    }
+    public double getBalance() {
+        return balance;
+    }
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+    void setId(String id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }
