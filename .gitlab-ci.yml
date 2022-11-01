@@ -68,7 +68,11 @@ java-package:
   image: alpine:latest
   stage: deploy
   before_script:
-    - apk update && apk add openssh-client && apk add docker && apk add docker-compose
+    - apk update
+    - apk add --no-cache openssh-client
+    - apk add --no-cache docker
+    - apk add --no-cache python3
+    - pip3 install docker-compose
   script:
     - eval $(ssh-agent -s)
     - chmod 600 $PRIVATE_KEY
