@@ -64,7 +64,7 @@ public class BanqueController {
         if(!accountService.checkIfAccountExistsById(id))
             return ResponseEntity.badRequest().body("Account doesn't exist");
         Account account = accountService.getAccount(id);
-        accountService.addStockToAccount(account, stock);     
+        accountService.addStockToAccount(account, stock);
         return ResponseEntity.status(201).body(account);
     }
 

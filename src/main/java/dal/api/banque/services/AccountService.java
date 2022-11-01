@@ -7,6 +7,7 @@ import java.security.spec.KeySpec;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import dal.api.banque.models.Account;
@@ -26,6 +27,9 @@ public class AccountService {
     @Autowired
     private StockService stockService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public boolean checkIfAccountExistsById(String Id) {
         return accountRepository.existsById(Id);
     }
@@ -41,7 +45,7 @@ public class AccountService {
     public Account convertAccountEntryToAccount(AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Account account = new Account();
         account.setName(accountEntry.getName());
-        String hashedPassword = hashPassword(accountEntry.getPassword());
+        String hashedPassword = passwordEncoder.encode(accountEntry.getPassword());
         account.setPassword(hashedPassword);
         account.setStocks(stockService.getStocks());
         return account;
@@ -77,17 +81,6 @@ public class AccountService {
             }
         }
         return account.getStocks();
-    }
-
-    public String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        //hash password with bcrypt
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = factory.generateSecret(spec).getEncoded();
-        return new String(hash);
     }
 
 

@@ -14,11 +14,12 @@ public class Account {
     private String name;
     private String password;
     private List<Stock> stocks;
-
     private int fee;
-
     private double balance;
     // private List<Operation> operations;
+
+    public Account() {
+    }
 
     public String getId() {
         return id;
@@ -55,8 +56,6 @@ public class Account {
     }
     public void setStocks(List<Stock> stocks) {
         this.stocks = stocks;
-    }
-    
-    
+    }    
 
 }
