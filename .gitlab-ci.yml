@@ -78,13 +78,13 @@ java-package:
     - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
-    - scp -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no docker-compose.yml "${SERVER_USER}@$SERVER_IP:/home/ubuntu/"
-    - scp -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no docker-compose.$CI_ENVIRONMENT_NAME.yml "${SERVER_USER}@$SERVER_IP:/home/ubuntu/"
+    - scp -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no docker-compose.yml "${SERVER_USER}@$SERVER_IP:/home/$SERVER_USER/"
+    - scp -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no docker-compose.$CI_ENVIRONMENT_NAME.yml "${SERVER_USER}@$SERVER_IP:/home/$SERVER_USER/"
 
     - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' $CI_REGISTRY"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "cd /home/ubuntu ; docker-compose down"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "cd /home/ubuntu ; docker-compose build"
-    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker-compose -f /home/ubuntu/docker-compose.yml -f /home/ubuntu/docker-compose.$CI_ENVIRONMENT_NAME.yml up -d"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "cd /home/$SERVER_USER ; docker-compose down"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "cd /home/$SERVER_USER ; docker-compose build"
+    - ssh -i "$PRIVATE_KEY" -o StrictHostKeyChecking=no "${SERVER_USER}@$SERVER_IP" "docker-compose -f /home/$SERVER_USER/docker-compose.yml -f /home/$SERVER_USER/docker-compose.$CI_ENVIRONMENT_NAME.yml up -d"
 
 docker-build-to-staging:
   extends: .docker-build
