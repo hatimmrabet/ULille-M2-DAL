@@ -70,8 +70,6 @@ java-package:
   before_script:
     - apk update
     - apk add --no-cache openssh-client
-    - apk add --no-cache docker
-    - apk add --no-cache docker-cli-compose
   script:
     - eval $(ssh-agent -s)
     - chmod 600 $PRIVATE_KEY
