@@ -2,8 +2,15 @@ version: "3.8"
 services:
     spring-server:
         image: benjil/dal-banque-staging:latest
-        restart: always
         ports:
             - "8080:8080"
         depends_on:
             - mongo_db
+        restart: always
+
+    mongo_db:
+        restart: always
+        image: mongo:6.0.2
+        ports:
+            - "27017:27017"
+        command: ["mongod", "--port", "27017"]

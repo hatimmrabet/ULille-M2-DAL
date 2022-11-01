@@ -8,7 +8,6 @@ services:
         depends_on:
             - mongo_db
     mongo_db:
-        restart: always
         image: mongo:6.0.2
         volumes:
             - './data:/data/db'
