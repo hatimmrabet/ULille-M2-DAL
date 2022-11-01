@@ -20,6 +20,7 @@ import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
+import dal.api.banque.services.SecurityService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -31,6 +32,9 @@ public class BanqueController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @GetMapping
     public ResponseEntity<Banque> getBanque() {
@@ -61,6 +65,7 @@ public class BanqueController {
     /** NOT USED for the moment */
     @PostMapping("/stocks/{id}")
     public ResponseEntity<?> addStockToAccount(@PathVariable String id, @RequestBody Stock stock){
+        // System.out.println(securityService.getConnectedAccountId());
         if(!accountService.checkIfAccountExistsById(id))
             return ResponseEntity.badRequest().body("Account doesn't exist");
         Account account = accountService.getAccount(id);
