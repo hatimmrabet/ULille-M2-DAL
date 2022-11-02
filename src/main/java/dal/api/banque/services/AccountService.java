@@ -49,7 +49,7 @@ public class AccountService {
     }
 
     public void addStockToAccount(Account account, Stock stock) {
-        account.getStocks().add(stock);
+        account.addStock(stock);
         accountRepository.save(account);
     }
 
@@ -63,7 +63,7 @@ public class AccountService {
         for(Stock rulesStock : stockService.getRulesForProduct(stock.getName())) {
             for(Stock accountStock : account.getStocks()) {
                 if(rulesStock.getName().equals(accountStock.getName())) {
-                    accountStock.setQuantity( accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
+                    accountStock.setQuantity(accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
                 }
             }
         }

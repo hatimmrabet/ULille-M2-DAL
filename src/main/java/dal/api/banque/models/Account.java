@@ -59,6 +59,18 @@ public class Account {
     }
     public void setStocks(List<Stock> stocks) {
         this.stocks = stocks;
-    }    
+    }
+
+    /**
+     * Ajouter un stock à la liste des stocks de l'account
+     * Si le stock existe déjà, on augmente la quantité, sinon, on l'ajoute
+     */
+    public void addStock(Stock stock) {
+        this.stocks.stream()
+                    .filter(s -> s.getName().equals(stock.getName()))
+                    .findFirst()
+                    .ifPresentOrElse(s -> { s.setQuantity(s.getQuantity() + stock.getQuantity()); }, 
+                                    () -> { this.stocks.add(stock); });
+    }
 
 }
