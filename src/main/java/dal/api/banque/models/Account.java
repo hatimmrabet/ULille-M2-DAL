@@ -6,12 +6,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document(collection = "accounts")
 public class Account {
     @Id
     private String id;
     @Indexed(unique = true)
     private String name;
+    @JsonIgnore
     private String password;
     private List<Stock> stocks;
     private int fee;
