@@ -12,17 +12,28 @@ import dal.api.banque.repositories.BanqueRepository;
 @Service
 public class BanqueService {
 
+    /**
+     * l'ID unique de notre banque
+     */
     private final String BANQUE_ID = "635f91f3917ad14fec82238d";
 
     @Autowired
     private BanqueRepository banqueRepository;
 
+    /**
+     * Recuperer les information de notre banque en utilisant notre ID
+     * return null si la banque n'existe pas 
+     */
     public Banque getMyBanque() {
         if (banqueRepository.findById(BANQUE_ID).isPresent())
             return banqueRepository.findById(BANQUE_ID).get();
         return null;
     }
 
+    /**
+     * Verifie si la banque existe, sinon, cree la banque avec des données static
+     * @return notre banque
+     */
     public Banque createBanque() {
         if (getMyBanque() != null)
         {
@@ -39,6 +50,10 @@ public class BanqueService {
         }
     }
 
+    /**
+     * Ajouter un compte a notre banque
+     * @param account le compte a ajouter
+     */
     public void addAccountToBanque(Account account) {
         Banque mybanque = getMyBanque();
         mybanque.getAccounts().add(account);

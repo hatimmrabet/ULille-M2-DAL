@@ -33,31 +33,45 @@ public class BanqueController {
     @Autowired
     private SecurityService securityService;
 
+    /**
+     * Avoir les informations de notre banque
+     */
     @GetMapping
     public ResponseEntity<Banque> getBanque() {
         return ResponseEntity.ok(banqueService.getMyBanque());
     }
     
+    /*
+     * Creer notre banque si elle n'existe pas
+     */
     @PostMapping
     public Banque addBanque() {
         return banqueService.createBanque();
     }
 
+    /**
+     * La liste des comptes de notre banque
+     */
     @GetMapping("/accounts")
     public ResponseEntity<List<Account>> getAccounts() {
         return ResponseEntity.ok(banqueService.getMyBanque().getAccounts());
     }
 
+    /**
+     * Ajouter un compte a notre banque si le nom du compte n'existe pas deja
+     */
     @PostMapping("/accounts")
     public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry) {
         if(accountService.checkIfAccountExistsByName(accountEntry.getName()))
             return ResponseEntity.badRequest().body("Account already exists");
-        Account account = accountService.createAccount(accountEntry);
+        Account account = accountService.saveAccount(accountEntry);
         banqueService.addAccountToBanque(account);
         return ResponseEntity.status(201).body(account);
     }
 
-    /** NOT USED for the moment */
+    /**
+     * Ajouter un stock au compte connecté
+     */
     @PostMapping("/stocks")
     public ResponseEntity<?> addStockToAccount(@RequestBody Stock stock){
         Account account = securityService.getConnectedAccount();
@@ -65,6 +79,9 @@ public class BanqueController {
         return ResponseEntity.status(201).body(account);
     }
 
+    /**
+     * Transformer un produit vers un autre
+     */
     @PostMapping("/transformation")
     public ResponseEntity<?> transform(@RequestBody Stock stock){
         Account account = securityService.getConnectedAccount();

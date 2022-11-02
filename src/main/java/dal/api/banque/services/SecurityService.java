@@ -32,12 +32,18 @@ public class SecurityService implements UserDetailsService {
         return new User(account.getName(), account.getPassword(), authorities);
     }
 
+    /**
+     * Recupere le compte connecté
+     */
     public Account getConnectedAccount()
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return accountRepository.findByName(username);
     }
 
+    /**
+     * Recupere l'id du compte connecté
+     */
     public String getConnectedAccountId()
     {
         return getConnectedAccount().getId();
