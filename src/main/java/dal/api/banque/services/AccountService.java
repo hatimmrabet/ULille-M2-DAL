@@ -1,7 +1,5 @@
 package dal.api.banque.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class AccountService {
         return accountRepository.findById(name).get();
     }
 
-    public Account convertAccountEntryToAccount(AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public Account convertAccountEntryToAccount(AccountEntry accountEntry) {
         Account account = new Account();
         account.setName(accountEntry.getName());
         String hashedPassword = passwordEncoder.encode(accountEntry.getPassword());
@@ -46,7 +44,7 @@ public class AccountService {
         return account;
     }
 
-    public Account createAccount(AccountEntry accountEntry) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public Account createAccount(AccountEntry accountEntry) {
         return accountRepository.save(convertAccountEntryToAccount(accountEntry));
     }
 
