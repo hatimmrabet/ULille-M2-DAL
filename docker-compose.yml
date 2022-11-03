@@ -7,7 +7,6 @@ services:
             - "8080:8080"
         depends_on:
             - mongo_db
-        hostname: spring-server
         links:
             - mongo_db:mongo
 
@@ -15,3 +14,6 @@ services:
         image: mongo:6.0.2
         volumes:
             - './data:/data/db'
+        ports:
+            - "27017:27017"
+        command: mongod --bind_ip_all
