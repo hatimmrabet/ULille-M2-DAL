@@ -2,12 +2,16 @@ package dal.api.banque.controllers;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +25,7 @@ import dal.api.banque.services.SecurityService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/banque")
+@RequestMapping("/bank")
 public class BanqueController {
 
     @Autowired
@@ -72,19 +76,26 @@ public class BanqueController {
     /**
      * Ajouter un stock au compte connecté
      */
-    @PostMapping("/stocks")
-    public ResponseEntity<?> addStockToAccount(@RequestBody Stock stock){
-        Account account = securityService.getConnectedAccount();
-        accountService.addStockToAccount(account, stock);
-        return ResponseEntity.status(201).body(account);
-    }
+    // @PostMapping("/stocks")
+    // public ResponseEntity<?> addStockToAccount(@RequestBody Stock stock){
+    //     Account account = securityService.getConnectedAccount();
+    //     accountService.addStockToAccount(account, stock);
+    //     return ResponseEntity.status(201).body(account);
+    // }
 
     /**
      * Transformer un produit vers un autre
      */
-    @PostMapping("/transformation")
-    public ResponseEntity<?> transform(@RequestBody Stock stock){
-        Account account = securityService.getConnectedAccount();
+    @PutMapping("/transform")
+    public ResponseEntity<?> transform( @RequestHeader("password") String password,
+                                        @PathParam("name") String name,
+                                        @RequestBody Stock stock)
+    {
+        Account account = accountService.getAccount(name);
+        if(account == null)
+            return ResponseEntity.badRequest().body("Account not found");
+        if(!accountService.checkPassword(name, password))
+            return ResponseEntity.status(401).body("Wrong password");
         account.setStocks(accountService.transform(account, stock));
         accountService.saveAccount(account);
         return ResponseEntity.ok().body(account);

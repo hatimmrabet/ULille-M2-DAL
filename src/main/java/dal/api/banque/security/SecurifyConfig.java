@@ -29,9 +29,10 @@ public class SecurifyConfig {
                 .csrf().disable()
                 .authorizeRequests(
                     auth -> auth
-                        .antMatchers("/banque").permitAll()
-                        .antMatchers("/banque/accounts").permitAll()
-                        .anyRequest().authenticated()
+                        // .antMatchers("/banque").permitAll()
+                        // .antMatchers("/banque/accounts").permitAll()
+                        // .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                         )
                 .userDetailsService(securityService)
                 .httpBasic()

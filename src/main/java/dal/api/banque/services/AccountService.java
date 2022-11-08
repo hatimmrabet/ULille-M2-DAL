@@ -38,11 +38,16 @@ public class AccountService {
         return accountRepository.existsByName(name);
     }
 
+    public boolean checkPassword(String name, String password) {
+        Account account = accountRepository.findByName(name);
+        return passwordEncoder.matches(password, account.getPassword());
+    }
+
     /**
      * Recupere un compte par son nom
     */
     public Account getAccount(String name) {
-        return accountRepository.findById(name).get();
+        return accountRepository.findByName(name);
     }
 
     /**
