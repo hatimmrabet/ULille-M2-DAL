@@ -10,6 +10,7 @@ import dal.api.banque.repositories.QuotationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class QuotationService {
@@ -92,4 +93,16 @@ public class QuotationService {
         return true;
 
     }
+
+    public String getAllQuotations() {
+        List<Quotation> quotations= quotationRepository.findAll();
+        String result="";
+        for(Quotation quotation:quotations){
+            result+=quotation.toString()+"\n";
+        }
+        return result;
+
+    }
+
+
 }

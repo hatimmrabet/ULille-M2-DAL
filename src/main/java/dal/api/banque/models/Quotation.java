@@ -79,4 +79,17 @@ public class Quotation
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public String toString() {
+        return "Quotation{" +
+                "Id='" + Id + '\'' +
+                ", Seller='" + Seller + '\'' +
+                ", Buyer='" + Buyer + '\'' +
+                ", cart=" + cart +
+                ", totalHT=" + totalHT +
+                ", totalTTC=" + totalTTC +
+                ", fee=" + fee +
+                ", status=" + status +
+                '}';
+    }
 }

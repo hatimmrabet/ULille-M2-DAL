@@ -18,7 +18,8 @@ public class QuotationController {
     private QuotationService quotationService;
 
     @GetMapping
-    public ResponseEntity<Quotation> getQuotation(String id) {
+
+    public ResponseEntity<Quotation> getQuotation(@PathVariable String id) {
         return ResponseEntity.ok(quotationService.getQuotation(id));
     }
 
@@ -31,6 +32,8 @@ public class QuotationController {
     @PutMapping
     @RequestMapping("/validate/{id}")
     public ResponseEntity<?> validateQuotation(@PathVariable String id) {
+        System.out.println(quotationService.checkIfQuotationExistsById(id));
+        System.out.println(quotationService.getAllQuotations());
         if (quotationService.checkIfQuotationExistsById(id)) {
             quotationService.validateQuotation(id);
             quotationService.createTransaction(id);
