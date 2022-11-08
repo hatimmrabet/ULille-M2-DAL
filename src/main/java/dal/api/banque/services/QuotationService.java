@@ -3,7 +3,6 @@ package dal.api.banque.services;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Quotation;
 import dal.api.banque.models.Status;
-import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.repositories.AccountRepository;
 import dal.api.banque.repositories.QuotationRepository;
@@ -25,7 +24,7 @@ public class QuotationService {
     private StockService stockService;
 
     public Quotation getQuotation(String id) {
-        return quotationRepository.findById(id).get();
+        return quotationRepository.findById(id).isPresent() ? quotationRepository.findById(id).get() : null;
     }
 
     public Quotation createQuotation(QuotationEntry quotationEntry) {

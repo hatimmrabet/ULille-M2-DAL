@@ -1,7 +1,5 @@
 package dal.api.banque.controllers;
 
-
-import dal.api.banque.models.Banque;
 import dal.api.banque.models.Quotation;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.services.QuotationService;
@@ -17,10 +15,14 @@ public class QuotationController {
     @Autowired
     private QuotationService quotationService;
 
-    @GetMapping
-
+    @GetMapping("/{id}")
     public ResponseEntity<Quotation> getQuotation(@PathVariable String id) {
-        return ResponseEntity.ok(quotationService.getQuotation(id));
+        Quotation quotation = quotationService.getQuotation(id);
+        if (quotation != null) {
+            return ResponseEntity.ok(quotation);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -51,8 +53,6 @@ public class QuotationController {
         }
         return ResponseEntity.badRequest().body("Quotation does not exist");
     }
-
-
 
 
 }
