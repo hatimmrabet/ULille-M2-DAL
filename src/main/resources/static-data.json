@@ -1,0 +1,86 @@
+{
+    "B&M": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 0,
+        "metal": 0,
+        "peinture": 50,
+        "plastique": 50,
+        "verre": 50,
+        "papier": 50,
+        "tissu": 50
+    },
+    "M&Pe": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 50,
+        "metal": 0,
+        "peinture": 0,
+        "plastique": 50,
+        "verre": 50,
+        "papier": 50,
+        "tissu": 50
+    },
+    "Pe&PI": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 50,
+        "metal": 50,
+        "peinture": 0,
+        "plastique": 0,
+        "verre": 50,
+        "papier": 50,
+        "tissu": 50
+    },
+    "PI&V": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 50,
+        "metal": 50,
+        "peinture": 50,
+        "plastique": 0,
+        "verre": 0,
+        "papier": 50,
+        "tissu": 50
+    },
+    "V&Pa": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 50,
+        "metal": 50,
+        "peinture": 50,
+        "plastique": 50,
+        "verre": 0,
+        "papier": 0,
+        "tissu": 50
+    },
+    "Pa&T": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 50,
+        "metal": 50,
+        "peinture": 50,
+        "plastique": 50,
+        "verre": 50,
+        "papier": 0,
+        "tissu": 0
+    },
+    "T&B": {
+        "chaise" : 1000,
+        "banc": 1000,
+        "table": 1000,
+        "bois": 0,
+        "metal": 50,
+        "peinture": 50,
+        "plastique": 50,
+        "verre": 50,
+        "papier": 50,
+        "tissu": 0
+    }
+}

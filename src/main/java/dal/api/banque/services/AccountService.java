@@ -54,8 +54,12 @@ public class AccountService {
         account.setName(accountEntry.getName());
         // On crypte le mot de passe
         account.setPassword(passwordEncoder.encode(accountEntry.getPassword()));
-        // initialisé le compte avec les stocks de base
-        account.setStocks(stockService.getStocks());
+        // initialisé le stock du compte
+        if(stockService.getFornisseurStocks(account.getName()) != null) {
+            account.setStocks(stockService.getFornisseurStocks(account.getName()));
+        } else {
+            account.setStocks(stockService.getStocks());
+        }
         // initialiser le compte avec un solde aleatoire
         account.setBalance(new Random().nextInt(1000000)/100.0);
         // donner des frais de transaction aleatoire
