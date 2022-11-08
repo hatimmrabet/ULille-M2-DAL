@@ -1,6 +1,7 @@
 package dal.api.banque.models;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.Map;
 
@@ -8,8 +9,10 @@ public class Quotation
 {
     @Id
     private String id;
-    private String seller;
-    private String buyer;
+    @DBRef
+    private Account seller;
+    @DBRef
+    private Account buyer;
     private Map<String, Integer> cart;
     private double totalHT;
     private double totalTTC;
@@ -22,18 +25,23 @@ public class Quotation
     public void setId(String id) {
         this.id = id;
     }
-    public String getSeller() {
+
+    public Account getSeller() {
         return seller;
     }
-    public void setSeller(String seller) {
+
+    public void setSeller(Account seller) {
         this.seller = seller;
     }
-    public String getBuyer() {
+
+    public Account getBuyer() {
         return buyer;
     }
-    public void setBuyer(String buyer) {
+
+    public void setBuyer(Account buyer) {
         this.buyer = buyer;
     }
+
     public Map<String, Integer> getCart() {
         return cart;
     }

@@ -53,8 +53,8 @@ public class QuotationService {
 
     private Quotation convertQuotationEntryToQuotation(QuotationEntry quotationEntry) {
         Quotation quotation = new Quotation();
-        quotation.setBuyer(accountRepository.findByName(quotationEntry.getBuyer()).getName());
-        quotation.setSeller(accountRepository.findByName(quotationEntry.getSeller()).getName());
+        quotation.setBuyer(accountRepository.findByName(quotationEntry.getBuyer()));
+        quotation.setSeller(accountRepository.findByName(quotationEntry.getSeller()));
         quotation.setCart(quotationEntry.getCart());
         return quotation;
     }
@@ -81,8 +81,8 @@ public class QuotationService {
 
     public boolean createTransaction(String id) {
         Quotation quotation = quotationRepository.findById(id).get();
-        Account buyer = accountRepository.findByName(quotation.getBuyer());
-        Account seller = accountRepository.findByName(quotation.getSeller());
+        Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
+        Account seller = accountRepository.findByName(quotation.getSeller().getName());
         buyer.setBalance(buyer.getBalance()-quotation.getTotalTTC());
         seller.setBalance(seller.getBalance()+quotation.getTotalHT());
         buyer.addStocks(quotation.getCart());
