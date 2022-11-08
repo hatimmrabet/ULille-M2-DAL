@@ -37,6 +37,8 @@ public class BanqueController {
     @Autowired
     private SecurityService securityService;
 
+    /* *********************************************************************************************************** */
+
     /**
      * Avoir les informations de notre banque
      */
@@ -52,6 +54,8 @@ public class BanqueController {
     public Banque addBanque() {
         return banqueService.createBanque();
     }
+
+    /* *********************************************************************************************************** */
 
     /**
      * Le detail d'un compte
@@ -79,6 +83,8 @@ public class BanqueController {
         banqueService.addAccountToBanque(account);
         return ResponseEntity.status(201).body(account);
     }
+
+    /* *********************************************************************************************************** */
 
     /**
      * Transformer un produit vers un autre
