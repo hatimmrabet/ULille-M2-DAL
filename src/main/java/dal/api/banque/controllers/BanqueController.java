@@ -44,7 +44,7 @@ public class BanqueController {
     public ResponseEntity<Banque> getBanque() {
         return ResponseEntity.ok(banqueService.getMyBanque());
     }
-    
+
     /*
      * Creer notre banque si elle n'existe pas
      */
@@ -54,19 +54,26 @@ public class BanqueController {
     }
 
     /**
-     * La liste des comptes de notre banque
+     * Le detail d'un compte
      */
-    @GetMapping("/accounts")
-    public ResponseEntity<List<Account>> getAccounts() {
-        return ResponseEntity.ok(banqueService.getMyBanque().getAccounts());
+    @GetMapping("/account")
+    public ResponseEntity<?> getUserAccount(
+            @RequestHeader("password") String password,
+            @PathParam("name") String name) {
+        Account account = accountService.getAccount(name);
+        if (account == null)
+            return ResponseEntity.badRequest().body("Account not found");
+        if (!accountService.checkPassword(name, password))
+            return ResponseEntity.status(401).body("Wrong password");
+        return ResponseEntity.ok().body(account);
     }
 
     /**
      * Ajouter un compte a notre banque si le nom du compte n'existe pas deja
      */
-    @PostMapping("/accounts")
+    @PostMapping("/account")
     public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry) {
-        if(accountService.checkIfAccountExistsByName(accountEntry.getName()))
+        if (accountService.checkIfAccountExistsByName(accountEntry.getName()))
             return ResponseEntity.badRequest().body("Account already exists");
         Account account = accountService.saveAccount(accountEntry);
         banqueService.addAccountToBanque(account);
@@ -74,27 +81,16 @@ public class BanqueController {
     }
 
     /**
-     * Ajouter un stock au compte connecté
-     */
-    // @PostMapping("/stocks")
-    // public ResponseEntity<?> addStockToAccount(@RequestBody Stock stock){
-    //     Account account = securityService.getConnectedAccount();
-    //     accountService.addStockToAccount(account, stock);
-    //     return ResponseEntity.status(201).body(account);
-    // }
-
-    /**
      * Transformer un produit vers un autre
      */
     @PutMapping("/transform")
-    public ResponseEntity<?> transform( @RequestHeader("password") String password,
-                                        @PathParam("name") String name,
-                                        @RequestBody Stock stock)
-    {
+    public ResponseEntity<?> transform(@RequestHeader("password") String password,
+            @PathParam("name") String name,
+            @RequestBody Stock stock) {
         Account account = accountService.getAccount(name);
-        if(account == null)
+        if (account == null)
             return ResponseEntity.badRequest().body("Account not found");
-        if(!accountService.checkPassword(name, password))
+        if (!accountService.checkPassword(name, password))
             return ResponseEntity.status(401).body("Wrong password");
         account.setStocks(accountService.transform(account, stock));
         accountService.saveAccount(account);
