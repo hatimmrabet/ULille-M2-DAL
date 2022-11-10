@@ -1,8 +1,10 @@
 package dal.api.banque.models;
 
+import org.bson.json.JsonObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import java.util.List;
 import java.util.Map;
 
 public class Quotation
@@ -45,8 +47,8 @@ public class Quotation
     public Map<String, Integer> getCart() {
         return cart;
     }
-    public void setCart(Map<String, Integer> cart) {
-        this.cart = cart;
+    public void setCart(List<Stock> cart) {
+
     }
     public double getTotalHT() {
         return totalHT;

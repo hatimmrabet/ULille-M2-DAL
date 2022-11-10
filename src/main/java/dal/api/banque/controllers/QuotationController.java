@@ -1,6 +1,7 @@
 package dal.api.banque.controllers;
 
 import dal.api.banque.models.Quotation;
+import dal.api.banque.models.Status;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.services.QuotationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/quotation")
+@RequestMapping("/bank/quotation")
 public class QuotationController {
 
     @Autowired
@@ -26,33 +27,37 @@ public class QuotationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addQuotation(@RequestBody QuotationEntry quotationEntry) {
-        Quotation quotation = quotationService.createQuotation(quotationEntry);
+    public ResponseEntity<?> addQuotation(@RequestBody QuotationEntry quotationEntry,@RequestParam String buyer, @RequestParam String seller) {
+        Quotation quotation = quotationService.createQuotation(quotationEntry, buyer, seller);
+
         return ResponseEntity.status(201).body(quotation);
     }
 
-    @PutMapping
-    @RequestMapping("/validate/{id}")
-    public ResponseEntity<?> validateQuotation(@PathVariable String id) {
-        System.out.println(quotationService.checkIfQuotationExistsById(id));
-        System.out.println(quotationService.getAllQuotations());
+    @PostMapping
+    @RequestMapping("/{id}")
+    public ResponseEntity<?> validateQuotation(@PathVariable String id,@RequestBody boolean status) {
+
         if (quotationService.checkIfQuotationExistsById(id)) {
-            quotationService.validateQuotation(id);
-            quotationService.createTransaction(id);
+            if (quotationService.getQuotation(id).getStatus() == Status.PENDING){
+            if (status) {
+                quotationService.validateQuotation(id);
+            } else {
+                quotationService.refuseQuotation(id);
+            }
             return ResponseEntity.ok().build();
         }
+        else if (quotationService.getQuotation(id).getStatus() == Status.ACCEPTED){
+            return ResponseEntity.badRequest().body("Quotation already validated");
+        }
+        else if (quotationService.getQuotation(id).getStatus() == Status.REFUSED){
+            return ResponseEntity.badRequest().body("Quotation already refused");
+        }
         return ResponseEntity.badRequest().body("Quotation does not exist");
+    }
+    return ResponseEntity.badRequest().body("Quotation does not exist");
     }
 
-    @PutMapping
-    @RequestMapping("/refuse/{id}")
-    public ResponseEntity<?> refuseQuotation(@PathVariable String id) {
-        if (quotationService.checkIfQuotationExistsById(id)) {
-            quotationService.refuseQuotation(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("Quotation does not exist");
-    }
+
 
 
 }

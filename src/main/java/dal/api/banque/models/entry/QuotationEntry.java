@@ -1,34 +1,19 @@
 package dal.api.banque.models.entry;
 
+import dal.api.banque.models.Stock;
+
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 import java.util.Map;
 
 public class QuotationEntry {
-    @NotEmpty(message = "name is required")
-    private String Seller;
-    @NotEmpty(message = "name is required")
-    private String Buyer;
 
-    private Map<String, Integer> cart;
+    private List<Stock> cart;
 
-    public String getSeller() {
-        return Seller;
-    }
-    public void setSeller(String seller) {
-        Seller = seller;
-    }
-    public String getBuyer() {
-        return Buyer;
-    }
-    public void setBuyer(String buyer) {
-        Buyer = buyer;
-    }
-    public Map<String, Integer> getCart() {
+    public List<Stock> getCart() {
         return cart;
     }
-    public void setCart(Map<String, Integer> cart) {
+    public void setCart(List<Stock> cart) {
         this.cart = cart;
     }
-
-
 }

@@ -3,6 +3,7 @@ package dal.api.banque.services;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Quotation;
 import dal.api.banque.models.Status;
+import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.repositories.AccountRepository;
 import dal.api.banque.repositories.QuotationRepository;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+
 @Service
 public class QuotationService {
 
@@ -23,26 +24,30 @@ public class QuotationService {
     @Autowired
     private StockService stockService;
 
+    @Autowired
+    private AccountService accountService;
+
     public Quotation getQuotation(String id) {
         return quotationRepository.findById(id).isPresent() ? quotationRepository.findById(id).get() : null;
     }
 
-    public Quotation createQuotation(QuotationEntry quotationEntry) {
-        Quotation quotation=convertQuotationEntryToQuotation(quotationEntry);
-        quotation.setStatus(Status.PENDING);
-        AtomicReference<Double> totalHT= new AtomicReference<>((double) 0);
-        Integer fee= accountRepository.findByName(quotationEntry.getBuyer()).getFee();
-        stockService.getStocks().forEach(stock -> {
-            if(quotation.getCart().containsKey(stock.getName())){
-                totalHT.updateAndGet(v -> v + stock.getPrice() * quotation.getCart().get(stock.getName()));
-            }
-        });
-        quotation.setTotalHT(totalHT.get());
-        quotation.setTotalTTC(totalHT.get()*fee/100+totalHT.get());
-  /*      for(){
-            //totalHT+=article.getKey()
-            // TODO
-        }*/
+    public Quotation createQuotation(QuotationEntry quotationEntry,String seller,String buyer) {
+        Quotation quotation=convertQuotationEntryToQuotation(quotationEntry,seller,buyer);
+        int fee= accountRepository.findByName(buyer).getFee();
+        List<Stock> stocks= quotationEntry.getCart();
+        double totalHT= stocks.get(0).getPrice();
+        double productionCost =getProductionCost(stocks.get(0).getName(),accountRepository.findByName(buyer).getId(),stocks.get(0).getQuantity());
+
+        quotation.setFee(fee);
+        quotation.setTotalHT(totalHT);
+        double totalTTC=totalHT+totalHT*fee/100;
+        quotation.setTotalTTC(totalTTC);
+        if (productionCost>=totalTTC){
+            quotation.setStatus(Status.REFUSED);
+        }
+        else {
+            quotation.setStatus(Status.PENDING);
+        }
         quotationRepository.save(quotation);
         return quotation;
     }
@@ -51,10 +56,10 @@ public class QuotationService {
         return quotationRepository.existsById(id);
     }
 
-    private Quotation convertQuotationEntryToQuotation(QuotationEntry quotationEntry) {
+    private Quotation convertQuotationEntryToQuotation(QuotationEntry quotationEntry,String seller,String buyer) {
         Quotation quotation = new Quotation();
-        quotation.setBuyer(accountRepository.findByName(quotationEntry.getBuyer()));
-        quotation.setSeller(accountRepository.findByName(quotationEntry.getSeller()));
+        quotation.setBuyer(accountRepository.findByName(seller));
+        quotation.setSeller(accountRepository.findByName(buyer));
         quotation.setCart(quotationEntry.getCart());
         return quotation;
     }
@@ -103,5 +108,30 @@ public class QuotationService {
 
     }
 
+    private double getProductionCost(String nameProduct, String idSeller,int quantity){
+        double productionCost=0;
+        Account seller = accountService.getAccount(idSeller);
+        List<Stock> ressources=stockService.getRulesForProduct(nameProduct);
+        if (ressources!=null){
+
+        for (Stock ressource:ressources){
+            for (Stock stock:seller.getStocks()){
+                if(stock.getName().equals(ressource.getName())){
+                    productionCost+=stock.getPrice()*ressource.getQuantity();
+                    break;
+                }
+            }
+        }
+        }
+        else {
+            for (Stock stock:seller.getStocks()){
+                if(stock.getName().equals(nameProduct)){
+                    productionCost+=stock.getPrice();
+                    break;
+                }
+            }
+        }
+        return productionCost*quantity;
+    }
 
 }
