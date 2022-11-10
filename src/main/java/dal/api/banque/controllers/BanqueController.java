@@ -1,7 +1,5 @@
 package dal.api.banque.controllers;
 
-import java.util.List;
-
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
-import dal.api.banque.services.SecurityService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -33,9 +30,6 @@ public class BanqueController {
 
     @Autowired
     private AccountService accountService;
-
-    @Autowired
-    private SecurityService securityService;
 
     /* *********************************************************************************************************** */
 
