@@ -31,7 +31,7 @@ public class StockService {
                 data.put(key, stocks);
             }
         } catch (IOException e) {
-            System.out.println("Error while loading static data");
+            throw new RuntimeException("Error while loading static data");
         }
         return data;
     }

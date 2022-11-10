@@ -12,7 +12,7 @@ public class Banque {
     @Id
     private String id;
     private String name;
-    private String adress;
+    private String address;
     @DBRef
     private List<Account> accounts;
 
@@ -28,11 +28,11 @@ public class Banque {
     public void setName(String name) {
         this.name = name;
     }
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
     public List<Account> getAccounts() {
         return accounts;

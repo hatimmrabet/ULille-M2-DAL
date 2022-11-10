@@ -38,11 +38,16 @@ public class AccountService {
         return accountRepository.existsByName(name);
     }
 
+    public boolean checkPassword(String name, String password) {
+        Account account = accountRepository.findByName(name);
+        return passwordEncoder.matches(password, account.getPassword());
+    }
+
     /**
      * Recupere un compte par son nom
     */
     public Account getAccount(String name) {
-        return accountRepository.findById(name).get();
+        return accountRepository.findByName(name);
     }
 
     /**
@@ -63,7 +68,7 @@ public class AccountService {
         // initialiser le compte avec un solde aleatoire
         account.setBalance(new Random().nextInt(1000000)/100.0);
         // donner des frais de transaction aleatoire
-        account.setFee(new Random().nextInt(40));
+        account.setFee(new Random().nextInt(25));
         return account;
     }
 
