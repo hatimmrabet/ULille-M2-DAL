@@ -2,9 +2,7 @@ package dal.api.banque.models.entry;
 
 import dal.api.banque.models.Stock;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Map;
 
 public class QuotationEntry {
 
