@@ -84,7 +84,7 @@ public class QuotationService {
         return false;
     }
 
-    public boolean createTransaction(String id) {
+/*    public boolean createTransaction(String id) {
         Quotation quotation = quotationRepository.findById(id).get();
         Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
         Account seller = accountRepository.findByName(quotation.getSeller().getName());
@@ -96,7 +96,7 @@ public class QuotationService {
         accountRepository.save(seller);
         return true;
 
-    }
+    }*/
 
     public String getAllQuotations() {
         List<Quotation> quotations= quotationRepository.findAll();
