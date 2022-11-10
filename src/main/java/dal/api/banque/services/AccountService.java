@@ -51,6 +51,13 @@ public class AccountService {
     }
 
     /**
+     * Recupere un compte par son id
+    */
+    public Account getAccountById(String id) {
+        return accountRepository.findById(id).isPresent() ? accountRepository.findById(id).get() : null;
+    }
+
+    /**
      * Creer un compte à partir d'un compteEntry, et remplir les champs manquants
      * avec des valeurs aleatoires
      */

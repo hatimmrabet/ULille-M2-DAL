@@ -27,37 +27,32 @@ public class QuotationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addQuotation(@RequestBody QuotationEntry quotationEntry,@RequestParam String buyer, @RequestParam String seller) {
+    public ResponseEntity<?> addQuotation(@RequestBody QuotationEntry quotationEntry, @RequestParam String buyer,
+            @RequestParam String seller) {
         Quotation quotation = quotationService.createQuotation(quotationEntry, buyer, seller);
-
-        return ResponseEntity.status(201).body(quotation);
+        return ResponseEntity.status(201).body(quotationService.convertQuotationToQuotationDTO(quotation));
     }
 
     @PostMapping
     @RequestMapping("/{id}")
-    public ResponseEntity<?> validateQuotation(@PathVariable String id,@RequestBody boolean status) {
+    public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody boolean status) {
 
         if (quotationService.checkIfQuotationExistsById(id)) {
-            if (quotationService.getQuotation(id).getStatus() == Status.PENDING){
-            if (status) {
-                quotationService.validateQuotation(id);
-            } else {
-                quotationService.refuseQuotation(id);
+            if (quotationService.getQuotation(id).getStatus() == Status.PENDING) {
+                if (status) {
+                    quotationService.validateQuotation(id);
+                } else {
+                    quotationService.refuseQuotation(id);
+                }
+                return ResponseEntity.ok().build();
+            } else if (quotationService.getQuotation(id).getStatus() == Status.ACCEPTED) {
+                return ResponseEntity.badRequest().body("Quotation already validated");
+            } else if (quotationService.getQuotation(id).getStatus() == Status.REFUSED) {
+                return ResponseEntity.badRequest().body("Quotation already refused");
             }
-            return ResponseEntity.ok().build();
-        }
-        else if (quotationService.getQuotation(id).getStatus() == Status.ACCEPTED){
-            return ResponseEntity.badRequest().body("Quotation already validated");
-        }
-        else if (quotationService.getQuotation(id).getStatus() == Status.REFUSED){
-            return ResponseEntity.badRequest().body("Quotation already refused");
+            return ResponseEntity.badRequest().body("Quotation does not exist");
         }
         return ResponseEntity.badRequest().body("Quotation does not exist");
     }
-    return ResponseEntity.badRequest().body("Quotation does not exist");
-    }
-
-
-
 
 }
