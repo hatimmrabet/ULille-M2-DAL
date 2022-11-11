@@ -1,12 +1,10 @@
 package dal.api.banque.services;
 
-import dal.api.banque.models.Account;
-import dal.api.banque.models.Quotation;
-import dal.api.banque.models.Status;
-import dal.api.banque.models.Stock;
+import dal.api.banque.models.*;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.models.response.QuotationDTO;
 import dal.api.banque.repositories.AccountRepository;
+import dal.api.banque.repositories.BanqueRepository;
 import dal.api.banque.repositories.QuotationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,9 @@ public class QuotationService {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private BanqueRepository banqueRepository;
 
     public Quotation getQuotation(String id) {
         return quotationRepository.findById(id).isPresent() ? quotationRepository.findById(id).get() : null;
@@ -97,22 +98,21 @@ public class QuotationService {
         return false;
     }
 
-    /*
-     * public boolean createTransaction(String id) {
-     * Quotation quotation = quotationRepository.findById(id).get();
-     * Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
-     * Account seller =
-     * accountRepository.findByName(quotation.getSeller().getName());
-     * buyer.setBalance(buyer.getBalance()-quotation.getTotalTTC());
-     * seller.setBalance(seller.getBalance()+quotation.getTotalHT());
-     * buyer.addStocks(quotation.getCart());
-     * seller.removeStocks(quotation.getCart());
-     * accountRepository.save(buyer);
-     * accountRepository.save(seller);
-     * return true;
-     * 
-     * }
-     */
+    public boolean createTransaction(String id) {
+     Quotation quotation = quotationRepository.findById(id).get();
+     Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
+     Account seller = accountRepository.findByName(quotation.getSeller().getName());
+     buyer.setBalance(buyer.getBalance()-quotation.getTotalTTC());
+     seller.setBalance(seller.getBalance()+quotation.getTotalHT());
+     Banque banque = banqueRepository.findById("10").get();
+     buyer.addStock(quotation.getCart().get(0));
+     seller.removeStocks(quotation.getCart().get(0));
+     banque.setCapital(banque.getCapital()+quotation.getTotalTTC()-quotation.getTotalHT());
+     accountRepository.save(buyer);
+     accountRepository.save(seller);
+     banqueRepository.save(banque);
+     return true;
+    }
 
     public String getAllQuotations() {
         List<Quotation> quotations = quotationRepository.findAll();

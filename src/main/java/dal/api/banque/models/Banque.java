@@ -13,6 +13,8 @@ public class Banque {
     private String id;
     private String name;
     private String address;
+
+    private double capital;
     @DBRef
     private List<Account> accounts;
 
@@ -39,6 +41,13 @@ public class Banque {
     }
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public double getCapital() {
+        return capital;
+    }
+    public void setCapital(double capital) {
+        this.capital = capital;
     }
     
     
