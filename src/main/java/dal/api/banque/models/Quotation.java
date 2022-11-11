@@ -14,15 +14,17 @@ public class Quotation
     private Account seller;
     @DBRef
     private Account buyer;
-    private Map<String, Integer> cart;
+    private List<Stock> cart;
     private double totalHT;
     private double totalTTC;
-    private Integer fee;
+    private int fee;
     private Status status;
-    
+
+
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -43,38 +45,43 @@ public class Quotation
         this.buyer = buyer;
     }
 
-    public Map<String, Integer> getCart() {
+    public List<Stock> getCart() {
         return cart;
     }
-    public void setCart(List<Stock> cart) {
 
+    public void setCart(List<Stock> cart) {
+        this.cart = cart;
     }
+
     public double getTotalHT() {
         return totalHT;
     }
+
     public void setTotalHT(double totalHT) {
         this.totalHT = totalHT;
     }
+
     public double getTotalTTC() {
         return totalTTC;
     }
+
     public void setTotalTTC(double totalTTC) {
         this.totalTTC = totalTTC;
     }
-    public Integer getFee() {
+
+    public int getFee() {
         return fee;
     }
-    public void setFee(Integer fee) {
+
+    public void setFee(int fee) {
         this.fee = fee;
     }
+
     public Status getStatus() {
         return status;
     }
+
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    
-
-
 }

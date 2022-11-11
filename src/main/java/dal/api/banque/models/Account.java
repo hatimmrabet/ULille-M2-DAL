@@ -76,16 +76,11 @@ public class Account {
                                     () -> { this.stocks.add(stock); });
     }
 
-    public boolean removeStocks(Map<String, Integer> cart) {
-        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
-            String stockName = entry.getKey();
-            int quantity = entry.getValue();
-            Stock stock = stocks.stream().filter(s -> s.getName().equals(stockName)).findFirst().orElse(null);
-            if (stock == null) {
-                return false;
-            }
-            stock.setQuantity(stock.getQuantity() - quantity);
-        }
-        return true;
+    public void removeStocks(Stock stock) {
+        this.stocks.stream()
+                    .filter(s -> s.getName().equals(stock.getName()))
+                    .findFirst()
+                    .ifPresent(s -> { s.setQuantity(s.getQuantity() - stock.getQuantity()); });
+
     }
 }
