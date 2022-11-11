@@ -53,6 +53,8 @@ public class QuotationController {
     public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody String status) {
 
         if (quotationService.checkIfQuotationExistsById(id)) {
+            // regex to check if string status is valid
+
             if (quotationService.getQuotation(id).getStatus() == Status.PENDING) {
                 if (new JSONObject(status).getBoolean("status")) {
                     quotationService.validateQuotation(id);
