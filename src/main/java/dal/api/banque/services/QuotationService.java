@@ -82,6 +82,7 @@ public class QuotationService {
         Quotation quotation = quotationRepository.findById(id).get();
         if (quotation.getStatus().equals(Status.PENDING)) {
             quotation.setStatus(Status.ACCEPTED);
+            createTransaction(quotation.getId());
             quotationRepository.save(quotation);
             return true;
         }
