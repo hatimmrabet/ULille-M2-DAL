@@ -1,7 +1,5 @@
 package dal.api.banque.services;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +13,13 @@ public class BanqueService {
     /**
      * l'ID unique de notre banque
      */
-    private final String BANQUE_ID = "635f91f3917ad14fec82238d";
+    private final String BANQUE_ID = "10";
 
     @Autowired
     private BanqueRepository banqueRepository;
+
+    @Autowired
+    private AccountService accountService;
 
     /**
      * Recuperer les information de notre banque en utilisant notre ID
@@ -45,7 +46,8 @@ public class BanqueService {
             notreBanque.setId(BANQUE_ID);
             notreBanque.setName("Rothschild & Co");
             notreBanque.setAddress("47 Rue du Faubourg Saint-Honoré, 75008 Paris");
-            notreBanque.setAccounts(new ArrayList<>());
+            notreBanque.setAccounts(accountService.getAccounts());
+            notreBanque.setCapital(1000);
             return banqueRepository.save(notreBanque);
         }
     }

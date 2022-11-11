@@ -57,6 +57,10 @@ public class AccountService {
         return accountRepository.findById(id).isPresent() ? accountRepository.findById(id).get() : null;
     }
 
+    public List<Account> getAccounts() {
+        return accountRepository.findAll();
+    }
+
     /**
      * Creer un compte à partir d'un compteEntry, et remplir les champs manquants
      * avec des valeurs aleatoires
