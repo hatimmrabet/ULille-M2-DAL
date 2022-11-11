@@ -61,5 +61,8 @@ public class BanqueService {
         mybanque.getAccounts().add(account);
         banqueRepository.save(mybanque);
     }
-    
+
+    public void saveBanque(Banque banque) {
+        banqueRepository.save(banque);
+    }
 }
