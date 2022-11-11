@@ -100,19 +100,19 @@ public class QuotationService {
     }
 
     public boolean createTransaction(String id) {
-     Quotation quotation = quotationRepository.findById(id).get();
-     Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
-     Account seller = accountRepository.findByName(quotation.getSeller().getName());
-     buyer.setBalance(buyer.getBalance()-quotation.getTotalTTC());
-     seller.setBalance(seller.getBalance()+quotation.getTotalHT());
-     Banque banque = banqueRepository.findById("10").get();
-     buyer.addStock(quotation.getCart().get(0));
-     seller.removeStocks(quotation.getCart().get(0));
-     banque.setCapital(banque.getCapital()+quotation.getTotalTTC()-quotation.getTotalHT());
-     accountRepository.save(buyer);
-     accountRepository.save(seller);
-     banqueRepository.save(banque);
-     return true;
+        Quotation quotation = quotationRepository.findById(id).get();
+        Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
+        Account seller = accountRepository.findByName(quotation.getSeller().getName());
+        buyer.setBalance(buyer.getBalance() - quotation.getTotalTTC());
+        seller.setBalance(seller.getBalance() + quotation.getTotalHT());
+        Banque banque = banqueRepository.findById("10").get();
+        buyer.addStock(quotation.getCart().get(0));
+        seller.removeStocks(quotation.getCart().get(0));
+        banque.setCapital(banque.getCapital() + quotation.getTotalTTC() - quotation.getTotalHT());
+        accountRepository.save(buyer);
+        accountRepository.save(seller);
+        banqueRepository.save(banque);
+        return true;
     }
 
     public String getAllQuotations() {

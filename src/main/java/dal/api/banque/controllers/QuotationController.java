@@ -6,6 +6,8 @@ import dal.api.banque.models.Status;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.QuotationService;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,24 +50,26 @@ public class QuotationController {
 
     @PostMapping
     @RequestMapping("/{id}")
-    public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody boolean status) {
+    public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody String status) {
 
         if (quotationService.checkIfQuotationExistsById(id)) {
             if (quotationService.getQuotation(id).getStatus() == Status.PENDING) {
-                if (status) {
+                if (new JSONObject(status).getBoolean("status")) {
                     quotationService.validateQuotation(id);
+                    return ResponseEntity.ok().body("Quotation validated");
                 } else {
                     quotationService.refuseQuotation(id);
+                    return ResponseEntity.ok().body("Quotation refused");
                 }
-                return ResponseEntity.ok().build();
             } else if (quotationService.getQuotation(id).getStatus() == Status.ACCEPTED) {
                 return ResponseEntity.badRequest().body("Quotation already validated");
             } else if (quotationService.getQuotation(id).getStatus() == Status.REFUSED) {
                 return ResponseEntity.badRequest().body("Quotation already refused");
             }
-            return ResponseEntity.badRequest().body("Quotation does not exist");
         }
         return ResponseEntity.badRequest().body("Quotation does not exist");
     }
+
+
 
 }
