@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import dal.api.banque.models.Account;
@@ -33,7 +32,6 @@ import dal.api.banque.services.StockService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 class BanqueApplicationTests {
@@ -143,8 +141,6 @@ class BanqueApplicationTests {
 		Quotation qot = quotationRepository.findAll().get(0);
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
-		System.out.println(accountService.getAccount(qot.getSeller().getName()).getBalance());
-		System.out.println(1000 + qot.getTotalHT());
 		assertEquals(accountService.getAccount(qot.getSeller().getName()).getBalance(), 1000+qot.getTotalHT());
 		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getBalance(), 1000-qot.getTotalTTC());
 		assertEquals(banqueService.getMyBanque().getCapital(), 1000 + qot.getTotalTTC() - qot.getTotalHT());
