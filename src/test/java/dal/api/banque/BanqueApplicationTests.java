@@ -11,8 +11,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Quotation;
@@ -27,9 +31,10 @@ import dal.api.banque.services.BanqueService;
 import dal.api.banque.services.QuotationService;
 import dal.api.banque.services.StockService;
 
-@SpringBootTest(classes = BanqueApplication.class, 
-				webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
-				properties = { "spring.data.mongodb.database: dal_db_test" })
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 class BanqueApplicationTests {
 
