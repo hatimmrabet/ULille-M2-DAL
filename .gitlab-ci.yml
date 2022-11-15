@@ -20,9 +20,21 @@ java-compile:
       - target/  
 
 unit-tests:
+  image: docker:20.10.16
+  variables:
+    DOCKER_HOST: tcp://docker:2375 
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - docker:20.10.16-dind
   stage: test
   needs: ["java-compile"]
+  before_script:
+    - apk update
+    - apk add --no-cache openjdk17-jdk
+    - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && tar -zxvf apache-maven-3.8.6-bin.tar.gz && rm apache-maven-3.8.6-bin.tar.gz && mv apache-maven-3.8.6 /usr/lib/mvn
   script:
+    - docker run -d --name mongo -p 27017:27017 mongo:6.0.2 mongod --bind_ip_all
     - find . -name "*.class" -exec touch {} \+
     - 'mvn $MAVEN_CLI_OPTS test'
   artifacts:
