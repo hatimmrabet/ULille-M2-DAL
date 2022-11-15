@@ -2,6 +2,8 @@ package dal.api.banque.controllers;
 
 import javax.websocket.server.PathParam;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,6 +33,8 @@ public class BanqueController {
     @Autowired
     private AccountService accountService;
 
+    Logger logger = LoggerFactory.getLogger(BanqueController.class);
+
     /* *********************************************************************************************************** */
 
     /**
@@ -58,11 +62,19 @@ public class BanqueController {
     public ResponseEntity<?> getUserAccount(
             @RequestHeader("password") String password,
             @PathParam("name") String name) {
+        logger.info("Recuperation de compte " + name);
         Account account = accountService.getAccount(name);
         if (account == null)
+        {
+            logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
+        }
         if (!accountService.checkPassword(name, password))
-            return ResponseEntity.status(401).body("Wrong password");
+        {
+            logger.info("Mot de passe incorrect");
+            return ResponseEntity.badRequest().body("Wrong password");
+
+        }
         return ResponseEntity.ok().body(account);
     }
 
@@ -71,10 +83,15 @@ public class BanqueController {
      */
     @PostMapping("/account")
     public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry) {
+        logger.info("Creation de compte " + accountEntry.getName());
         if (accountService.checkIfAccountExistsByName(accountEntry.getName()))
+        {
+            logger.info("Compte " + accountEntry.getName() + " existe deja");
             return ResponseEntity.badRequest().body("Account already exists");
+        }
         Account account = accountService.saveAccount(accountEntry);
         banqueService.addAccountToBanque(account);
+        logger.info("Compte " + accountEntry.getName() + " cree");
         return ResponseEntity.status(201).body(account);
     }
 
@@ -87,13 +104,21 @@ public class BanqueController {
     public ResponseEntity<?> transform(@RequestHeader("password") String password,
             @PathParam("name") String name,
             @RequestBody Stock stock) {
+        logger.info("Transformation du produit "+stock.getName()+", qty: "+stock.getQuantity()+" de "+name);
         Account account = accountService.getAccount(name);
         if (account == null)
+        {
+            logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
+        }
         if (!accountService.checkPassword(name, password))
-            return ResponseEntity.status(401).body("Wrong password");
+        {
+            logger.info("Mot de passe incorrect");
+            return ResponseEntity.badRequest().body("Wrong password");
+        }
         account.setStocks(accountService.transform(account, stock));
         accountService.saveAccount(account);
+        logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);
     }
 
