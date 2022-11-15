@@ -79,7 +79,11 @@ public class AccountService {
         // initialiser le compte avec un solde aleatoire
         account.setBalance(new Random().nextInt(1000000)/100.0);
         // donner des frais de transaction aleatoire
-        account.setFee(new Random().nextInt(25));
+        if(stockService.getFournisseurFrais(account.getName()) != -1) {
+            account.setFee(stockService.getFournisseurFrais(account.getName()));
+        } else {
+            account.setFee(new Random().nextInt(15) + 5);
+        }
         return account;
     }
 

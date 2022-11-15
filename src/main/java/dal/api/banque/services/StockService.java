@@ -1,43 +1,64 @@
 package dal.api.banque.services;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import dal.api.banque.models.Stock;
+import dal.api.banque.utils.FileManager;
 
 @Service
-public class StockService {
+public class StockService  {
 
-    public HashMap<String, List<Stock>> loadData() {
+    private HashMap<String, List<Stock>> clientsStocks = new HashMap<String, List<Stock>>();
+    private HashMap<String, Integer> frais = new HashMap<String, Integer>();
+    private final String DATA_FILE = "static-data.json";
+    private final String FEE_FILE = "static-frais.json";
+
+    public StockService() {
+        this.clientsStocks = loadClientsData();
+        this.frais = loadFraisData();
+    }
+
+    public HashMap<String, List<Stock>> loadClientsData() {
         HashMap<String, List<Stock>> data = new HashMap<String, List<Stock>>();
-        try {
-            String json = IOUtils.toString(new ClassPathResource("static/static-data.json").getInputStream(), StandardCharsets.UTF_8);
-            JSONObject obj = new JSONObject(json);
-            for (String key : obj.keySet()) {
-                List<Stock> stocks = new ArrayList<Stock>();
-                JSONObject stock = obj.getJSONObject(key);
-                for (String key2 : stock.keySet()) {
-                    Stock s = new Stock(key2, 0, stock.getInt(key2));
-                    stocks.add(s);
-                }
-                data.put(key, stocks);
+        JSONObject obj = new JSONObject(FileManager.getFileContent(DATA_FILE));
+        for (String key : obj.keySet()) {
+            List<Stock> stocks = new ArrayList<Stock>();
+            JSONObject stock = obj.getJSONObject(key);
+            for (String key2 : stock.keySet()) {
+                Stock s = new Stock(key2, 0, stock.getInt(key2));
+                stocks.add(s);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Error while loading static data");
+            data.put(key, stocks);
+        }
+        return data;
+    }
+
+    public HashMap<String, Integer> loadFraisData() {
+        HashMap<String, Integer> data = new HashMap<String, Integer>();
+        JSONObject obj = new JSONObject(FileManager.getFileContent(FEE_FILE));
+        for (String key : obj.keySet()) {
+            data.put(key, obj.getInt(key));
         }
         return data;
     }
 
     public List<Stock> getFornisseurStocks(String fournisseur) {
-        return loadData().get(fournisseur);
+        if(clientsStocks.containsKey(fournisseur)) {
+            return clientsStocks.get(fournisseur);
+        }
+        return null;
+    }
+
+    public int getFournisseurFrais(String fournisseur) {
+        if(frais.containsKey(fournisseur)) {
+            return frais.get(fournisseur);
+        }
+        return -1;
     }
 
     public List<Stock> getStocks() {
