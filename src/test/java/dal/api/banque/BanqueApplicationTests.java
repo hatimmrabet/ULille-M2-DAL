@@ -39,7 +39,7 @@ import dal.api.banque.services.StockService;
 class BanqueApplicationTests {
 
 	@Container
-	static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.2");
+	static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.2");
 
 	@DynamicPropertySource
 	static void setProperties(DynamicPropertyRegistry registry) {
