@@ -3,6 +3,7 @@ package dal.api.banque.services;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
+import dal.api.banque.models.entry.BuyEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,9 @@ public class ClientService {
 
     @Autowired
     private BanqueService banqueService;
+
+    @Autowired
+    private StockService stockService;
 
     public Map<String,Map<String,Double>> extraction() {
         //send account information as hsahmap to client
@@ -59,6 +63,30 @@ public class ClientService {
         //update the stock
         Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(produit)).findFirst().get();
         stock.setQuantity((int) stock.getQuantity()-quantite);
+        accountService.saveAccount(account);
+        banqueService.saveBanque(banque);
+
+        return true;
+    }
+
+    public Boolean buy(String name, BuyEntry buyEntry) {
+        Account account = accountService.getAccount(name);
+        //check if the account exists
+        if(account==null) {
+            return false;
+        }
+        Banque banque = banqueService.getMyBanque();
+        //update the account
+        double priceOfStock =stockService.getStocks().stream().filter(stock -> stock.getName().equals(buyEntry.getType())).findFirst().get().getPrice();
+        double feeOfProduct = (buyEntry.getQuantity()*priceOfStock*account.getFee()/100);
+        System.out.println(feeOfProduct);
+        double total = (buyEntry.getQuantity()*priceOfStock)+feeOfProduct;
+
+        account.setBalance(account.getBalance()-total);
+        banque.setCapital(banque.getCapital()+ feeOfProduct);
+        //update the stock
+        Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(buyEntry.getType())).findFirst().get();
+        stock.setQuantity((int) stock.getQuantity()+buyEntry.getQuantity());
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
 
