@@ -19,7 +19,7 @@ public class StockService {
     public HashMap<String, List<Stock>> loadData() {
         HashMap<String, List<Stock>> data = new HashMap<String, List<Stock>>();
         try {
-            String json = IOUtils.toString(new ClassPathResource("static-data.json").getInputStream(), StandardCharsets.UTF_8);
+            String json = IOUtils.toString(new ClassPathResource("static/static-data.json").getInputStream(), StandardCharsets.UTF_8);
             JSONObject obj = new JSONObject(json);
             for (String key : obj.keySet()) {
                 List<Stock> stocks = new ArrayList<Stock>();
