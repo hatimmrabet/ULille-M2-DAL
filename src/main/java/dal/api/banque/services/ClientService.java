@@ -26,7 +26,6 @@ public class ClientService {
         //retour → {«Fournisseur B&M» : {« compte » : montant, « bois » : montant, ...},
         //« Fournisseur M&Pe » : ...}
         for(Account account : accounts) {
-            accountMap.put(account.getName(),null);
             Map<String,Double> content = new HashMap<>();
             for(Stock stock : account.getStocks()) {
                 content.put(stock.getName(), (double) stock.getQuantity());
@@ -59,7 +58,7 @@ public class ClientService {
         banque.setCapital(banque.getCapital()+ frais);
         //update the stock
         Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(produit)).findFirst().get();
-        stock.setQuantity(stock.getQuantity()-quantite);
+        stock.setQuantity((int) stock.getQuantity()-quantite);
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
 

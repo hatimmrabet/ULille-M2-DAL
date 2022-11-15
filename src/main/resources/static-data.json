@@ -1,5 +1,5 @@
 {
-    "B&M": {
+    "BM": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -11,7 +11,7 @@
         "papier": 50,
         "tissu": 50
     },
-    "M&Pe": {
+    "MPe": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -23,7 +23,7 @@
         "papier": 50,
         "tissu": 50
     },
-    "Pe&PI": {
+    "PePI": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -35,7 +35,7 @@
         "papier": 50,
         "tissu": 50
     },
-    "PI&V": {
+    "PIV": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -47,7 +47,7 @@
         "papier": 50,
         "tissu": 50
     },
-    "V&Pa": {
+    "VPa": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -59,7 +59,7 @@
         "papier": 0,
         "tissu": 50
     },
-    "Pa&T": {
+    "PaT": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
@@ -71,7 +71,7 @@
         "papier": 0,
         "tissu": 0
     },
-    "T&B": {
+    "TB": {
         "chaise" : 1000,
         "banc": 1000,
         "table": 1000,
