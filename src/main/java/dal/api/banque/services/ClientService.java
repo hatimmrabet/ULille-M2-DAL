@@ -4,6 +4,10 @@ import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.BuyEntry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +27,13 @@ public class ClientService {
     @Autowired
     private StockService stockService;
 
+    Logger logger = LoggerFactory.getLogger(ClientService.class);
+
     public Map<String,Map<String,Double>> extraction() {
+        logger.info("Debut extraction");
         //send account information as hsahmap to client
         List<Account> accounts =accountService.getAccounts();
         Map<String,Map<String,Double>> accountMap= new HashMap<>();
-        //retour → {«Fournisseur B&M» : {« compte » : montant, « bois » : montant, ...},
-        //« Fournisseur M&Pe » : ...}
         for(Account account : accounts) {
             Map<String,Double> content = new HashMap<>();
             for(Stock stock : account.getStocks()) {
@@ -37,24 +42,28 @@ public class ClientService {
             content.put("compte",account.getBalance());
             accountMap.put(account.getName(),content);
         }
+        logger.info("Available accounts: " + accountMap.size());
+        logger.info("Fin extraction");
         return accountMap;
 
     }
 
     public Boolean paiement(String fournisseur, String produit, int quantite,double prix) {
+        logger.info("Debut paiement");
         Account account = accountService.getAccount(fournisseur);
         //check if the account exists
         if(account==null) {
+            logger.info("Account not found");
             return false;
         }
-/*        //check if the stock exists
-        if(account.getStocks().stream().filter(stock -> stock.getName().equals(produit)).count()==0) {
-            return false;
-        }
-        //check if the quantity is available
-        if(account.getStocks().stream().filter(stock -> stock.getName().equals(produit)).findFirst().get().getQuantity()<quantite) {
-            return false;
-        }*/
+        // //check if the stock exists
+        // if(account.getStocks().stream().filter(stock -> stock.getName().equals(produit)).count()==0) {
+        //     return false;
+        // }
+        // //check if the quantity is available
+        // if(account.getStocks().stream().filter(stock -> stock.getName().equals(produit)).findFirst().get().getQuantity()<quantite) {
+        //     return false;
+        // }
         Banque banque = banqueService.getMyBanque();
         //update the account
         double frais = (quantite*prix)*account.getFee()/100;
@@ -62,7 +71,9 @@ public class ClientService {
         banque.setCapital(banque.getCapital()+ frais);
         //update the stock
         Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(produit)).findFirst().get();
+        stock.setQuantity(stock.getQuantity()-quantite);
         stock.setQuantity((int) stock.getQuantity()-quantite);
+        logger.info("Details of the transaction: fournisseur: " + fournisseur +" produit: " + produit + " qty: " + quantite + " prix: " + prix);
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
 
@@ -89,7 +100,7 @@ public class ClientService {
         stock.setQuantity((int) stock.getQuantity()+buyEntry.getQuantity());
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
-
+        logger.info("Fin paiement");
         return true;
     }
 }
