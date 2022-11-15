@@ -43,7 +43,7 @@ public class QuotationService {
         Quotation quotation = convertQuotationEntryToQuotation(quotationEntry, seller, buyer);
         int fee = accountRepository.findByName(buyer).getFee();
         List<Stock> stocks = quotationEntry.getCart();
-        double totalHT = stocks.get(0).getPrice();
+        double totalHT = stocks.get(0).getPrice()*stocks.get(0).getQuantity();
         double productionCost = getProductionCost(stocks.get(0).getName(), accountRepository.findByName(buyer).getId(),
                 stocks.get(0).getQuantity());
         quotation.setFee(fee);
