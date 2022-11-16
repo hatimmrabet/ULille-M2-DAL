@@ -113,9 +113,9 @@ public class QuotationService {
         Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
         Account seller = accountRepository.findByName(quotation.getSeller().getName());
         logger.info("Buyer: " + buyer.getName() + " and seller: " + seller.getName());
-        buyer.setBalance(buyer.getBalance() - quotation.getTTC());
-        seller.setBalance(seller.getBalance() + quotation.getHT());
-        logger.info("Buyer balance: " + buyer.getBalance() + " and seller balance: " + seller.getBalance());
+        buyer.setMoney(buyer.getMoney() - quotation.getTTC());
+        seller.setMoney(seller.getMoney() + quotation.getHT());
+        logger.info("Buyer balance: " + buyer.getMoney() + " and seller balance: " + seller.getMoney());
         Banque banque = banqueRepository.findById(BanqueService.BANQUE_ID).get();
         buyer.addStock(quotation.getCart().get(0));
         seller.removeStocks(quotation.getCart().get(0));

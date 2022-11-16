@@ -39,7 +39,7 @@ public class ClientService {
             for(Stock stock : account.getStocks()) {
                 content.put(stock.getType(), (double) stock.getQuantity());
             }
-            content.put("compte",account.getBalance());
+            content.put("compte",account.getMoney());
             accountMap.put(account.getName(),content);
         }
         logger.info("Available accounts: " + accountMap.size());
@@ -67,7 +67,7 @@ public class ClientService {
         Banque banque = banqueService.getMyBanque();
         //update the account
         double frais = (quantite*prix)*account.getFee()/100;
-        account.setBalance(account.getBalance()+(quantite*prix)-frais);
+        account.setMoney(account.getMoney()+(quantite*prix)-frais);
         banque.setCapital(banque.getCapital()+ frais);
         //update the stock
         Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getType().equals(produit)).findFirst().get();
@@ -93,7 +93,7 @@ public class ClientService {
         System.out.println(feeOfProduct);
         double total = (buyEntry.getQuantity()*priceOfStock)+feeOfProduct;
 
-        account.setBalance(account.getBalance()-total);
+        account.setMoney(account.getMoney()-total);
         banque.setCapital(banque.getCapital()+ feeOfProduct);
         //update the stock
         Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getType().equals(buyEntry.getType())).findFirst().get();

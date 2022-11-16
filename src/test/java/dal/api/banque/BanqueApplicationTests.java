@@ -60,7 +60,7 @@ class BanqueApplicationTests {
 		entry.setId("1");
 		entry.setName("test");
 		entry.setPassword("test");
-		entry.setBalance(1000);
+		entry.setMoney(1000);
 		entry.setFee(16);
 		entry.setStocks(stockService.getStocks());
 		accountService.saveAccount(entry);
@@ -84,7 +84,7 @@ class BanqueApplicationTests {
 		Stock chaise = new Stock("chaise", 100, 100);
 		accountService.transform(entry, chaise);
 		// check balance didn't change
-		assertTrue(entry.getBalance() == 1000);
+		assertTrue(entry.getMoney() == 1000);
 		// check stock quantity changed
 		for (Stock s : entry.getStocks()) {
 			if (s.getType().equals(chaise.getType())) {
@@ -113,8 +113,8 @@ class BanqueApplicationTests {
 		// check quotation status
 		assertTrue(qot.getStatus().equals(Status.REFUSED));
 		// check still have same money
-		assertTrue(accountService.getAccount("test").getBalance() == 1000);
-		assertTrue(accountService.getAccount("test2").getBalance() == 1000);
+		assertTrue(accountService.getAccount("test").getMoney() == 1000);
+		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
 		for (Stock s : accountService.getAccount("test").getStocks()) {
 			assertTrue(s.getQuantity() == 0);
@@ -134,8 +134,8 @@ class BanqueApplicationTests {
 		// check quotation status
 		assertTrue(qot.getStatus().equals(Status.PENDING));
 		// check still have same money
-		assertTrue(accountService.getAccount("test").getBalance() == 1000);
-		assertTrue(accountService.getAccount("test2").getBalance() == 1000);
+		assertTrue(accountService.getAccount("test").getMoney() == 1000);
+		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
 		for (Stock s : accountService.getAccount("test").getStocks()) {
 			assertTrue(s.getQuantity() == 0);
@@ -147,9 +147,9 @@ class BanqueApplicationTests {
 		Quotation qot = quotationRepository.findAll().get(0);
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
-		assertEquals(accountService.getAccount(qot.getSeller().getName()).getBalance(),
+		assertEquals(accountService.getAccount(qot.getSeller().getName()).getMoney(),
 				1000 + qot.getHT());
-		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getBalance(),
+		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getMoney(),
 				1000 - qot.getTTC());
 		assertEquals(banqueService.getMyBanque().getCapital(), 1000 +
 				qot.getTTC() - qot.getHT());

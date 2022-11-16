@@ -20,7 +20,7 @@ public class Account {
 
     private int fee;
 
-    private double balance;
+    private double money;
     // private List<Operation> operations;
 
     public Account() {
@@ -38,11 +38,11 @@ public class Account {
     public void setFee(int fee) {
         this.fee = fee;
     }
-    public double getBalance() {
-        return balance;
+    public double getMoney() {
+        return money;
     }
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setMoney(double money) {
+        this.money = money;
     }
     public String getName() {
         return name;
