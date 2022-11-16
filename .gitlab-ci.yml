@@ -6,12 +6,26 @@ variables:
 
 image: maven:3.8-openjdk-17-slim
 
+stages:
+  - clean
+  - build
+  - test
+  - deploy
+
 cache:
   paths:
     - .m2/repository
 
+clean:
+  image: maven:3.8-openjdk-17-slim
+  stage: clean
+  script:
+    - echo "Cleaning leftovers from previous builds"
+    - mvn $MAVEN_CLI_OPTS clean
+
 java-compile:
   stage: build
+  needs: ["clean"]
   script:
     - mvn $MAVEN_CLI_OPTS compile -DskipTests=true
   artifacts:
