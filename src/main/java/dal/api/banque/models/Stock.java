@@ -2,21 +2,21 @@ package dal.api.banque.models;
 
 public class Stock {
 
-    private String name;
+    private String type;
     private int quantity;
     private double price;
     
-    public Stock(String name, int quantity, double price) {
-        this.name = name;
+    public Stock(String type, int quantity, double price) {
+        this.type = type;
         this.quantity = quantity;
         this.price = price;
     }
     
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
     public int getQuantity() {
         return quantity;

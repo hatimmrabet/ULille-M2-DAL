@@ -119,16 +119,16 @@ public class AccountService {
      */
     public List<Stock> transform(Account account, Stock stock) {
         // diminuer le stock en se basant sur la quantité demandé et les regles de transformation
-        for(Stock rulesStock : stockService.getRulesForProduct(stock.getName())) {
+        for(Stock rulesStock : stockService.getRulesForProduct(stock.getType())) {
             for(Stock accountStock : account.getStocks()) {
-                if(rulesStock.getName().equals(accountStock.getName())) {
+                if(rulesStock.getType().equals(accountStock.getType())) {
                     accountStock.setQuantity(accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
                 }
             }
         }
         // ajouter le stock produit
         for(Stock accountStock : account.getStocks()) {
-            if(accountStock.getName().equals(stock.getName())) {
+            if(accountStock.getType().equals(stock.getType())) {
                 accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
             }
         }

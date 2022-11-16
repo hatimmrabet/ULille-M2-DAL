@@ -44,7 +44,7 @@ public class QuotationService {
         int fee = accountRepository.findByName(buyer).getFee();
         List<Stock> stocks = quotationEntry.getCart();
         double totalHT = stocks.get(0).getPrice()*stocks.get(0).getQuantity();
-        double productionCost = getProductionCost(stocks.get(0).getName(), accountRepository.findByName(buyer).getId(),
+        double productionCost = getProductionCost(stocks.get(0).getType(), accountRepository.findByName(buyer).getId(),
                 stocks.get(0).getQuantity());
         quotation.setFee(fee);
         quotation.setTotalHT(totalHT);
@@ -144,7 +144,7 @@ public class QuotationService {
         if (ressources != null) {
             for (Stock ressource : ressources) {
                 for (Stock stock : seller.getStocks()) {
-                    if (stock.getName().equals(ressource.getName())) {
+                    if (stock.getType().equals(ressource.getType())) {
                         productionCost += stock.getPrice() * ressource.getQuantity();
                         break;
                     }
@@ -152,7 +152,7 @@ public class QuotationService {
             }
         } else {
             for (Stock stock : seller.getStocks()) {
-                if (stock.getName().equals(nameProduct)) {
+                if (stock.getType().equals(nameProduct)) {
                     productionCost += stock.getPrice();
                     break;
                 }

@@ -87,11 +87,11 @@ class BanqueApplicationTests {
 		assertTrue(entry.getBalance() == 1000);
 		// check stock quantity changed
 		for (Stock s : entry.getStocks()) {
-			if (s.getName().equals(chaise.getName())) {
+			if (s.getType().equals(chaise.getType())) {
 				assertTrue(s.getQuantity() == 100);
 			} else {
-				for (Stock ressource : stockService.getRulesForProduct(chaise.getName())) {
-					if (s.getName().equals(ressource.getName())) {
+				for (Stock ressource : stockService.getRulesForProduct(chaise.getType())) {
+					if (s.getType().equals(ressource.getType())) {
 						assertTrue(s.getQuantity() == -ressource.getQuantity() * chaise.getQuantity());
 						break;
 					}
@@ -155,7 +155,7 @@ class BanqueApplicationTests {
 				qot.getTotalTTC() - qot.getTotalHT());
 
 		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStocks()) {
-			if (s.getName().equals("chaise")) {
+			if (s.getType().equals("chaise")) {
 				assertEquals(2, s.getQuantity());
 			}
 		}

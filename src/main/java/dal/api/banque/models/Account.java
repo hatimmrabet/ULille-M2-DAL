@@ -69,7 +69,7 @@ public class Account {
      */
     public void addStock(Stock stock) {
         this.stocks.stream()
-                    .filter(s -> s.getName().equals(stock.getName()))
+                    .filter(s -> s.getType().equals(stock.getType()))
                     .findFirst()
                     .ifPresentOrElse(s -> { s.setQuantity(s.getQuantity() + stock.getQuantity()); },
                                     () -> { this.stocks.add(stock); });
@@ -77,7 +77,7 @@ public class Account {
 
     public void removeStocks(Stock stock) {
         this.stocks.stream()
-                    .filter(s -> s.getName().equals(stock.getName()))
+                    .filter(s -> s.getType().equals(stock.getType()))
                     .findFirst()
                     .ifPresent(s -> { s.setQuantity(s.getQuantity() - stock.getQuantity()); });
 
