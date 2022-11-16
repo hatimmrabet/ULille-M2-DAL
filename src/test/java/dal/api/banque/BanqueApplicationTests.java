@@ -62,7 +62,7 @@ class BanqueApplicationTests {
 		entry.setPassword("test");
 		entry.setMoney(1000);
 		entry.setFee(16);
-		entry.setStocks(stockService.getStocks());
+		entry.setStock(stockService.getStocks());
 		accountService.saveAccount(entry);
 		entry.setId("2");
 		entry.setName("test2");
@@ -80,13 +80,13 @@ class BanqueApplicationTests {
 	void testTransformation() {
 		Account entry = accountService.getAccount("test");
 		// check if have 10 products
-		assertTrue(entry.getStocks().size() == 10);
+		assertTrue(entry.getStock().size() == 10);
 		Stock chaise = new Stock("chaise", 100, 100);
 		accountService.transform(entry, chaise);
 		// check balance didn't change
 		assertTrue(entry.getMoney() == 1000);
 		// check stock quantity changed
-		for (Stock s : entry.getStocks()) {
+		for (Stock s : entry.getStock()) {
 			if (s.getType().equals(chaise.getType())) {
 				assertTrue(s.getQuantity() == 100);
 			} else {
@@ -99,7 +99,7 @@ class BanqueApplicationTests {
 			}
 		}
 		// check if have 10 products
-		assertTrue(entry.getStocks().size() == 10);
+		assertTrue(entry.getStock().size() == 10);
 	}
 
 	@Test
@@ -116,7 +116,7 @@ class BanqueApplicationTests {
 		assertTrue(accountService.getAccount("test").getMoney() == 1000);
 		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
-		for (Stock s : accountService.getAccount("test").getStocks()) {
+		for (Stock s : accountService.getAccount("test").getStock()) {
 			assertTrue(s.getQuantity() == 0);
 		}
 		// supress quotation
@@ -137,7 +137,7 @@ class BanqueApplicationTests {
 		assertTrue(accountService.getAccount("test").getMoney() == 1000);
 		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
-		for (Stock s : accountService.getAccount("test").getStocks()) {
+		for (Stock s : accountService.getAccount("test").getStock()) {
 			assertTrue(s.getQuantity() == 0);
 		}
 	}
@@ -154,7 +154,7 @@ class BanqueApplicationTests {
 		assertEquals(banqueService.getMyBanque().getCapital(), 1000 +
 				qot.getTTC() - qot.getHT());
 
-		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStocks()) {
+		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStock()) {
 			if (s.getType().equals("chaise")) {
 				assertEquals(2, s.getQuantity());
 			}

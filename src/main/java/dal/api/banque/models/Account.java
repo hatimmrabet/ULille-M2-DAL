@@ -16,7 +16,7 @@ public class Account {
     private String name;
     @JsonIgnore
     private String password;
-    private List<Stock> stocks;
+    private List<Stock> stock;
 
     private int fee;
 
@@ -56,11 +56,11 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
-    public List<Stock> getStocks() {
-        return stocks;
+    public List<Stock> getStock() {
+        return stock;
     }
-    public void setStocks(List<Stock> stocks) {
-        this.stocks = stocks;
+    public void setStock(List<Stock> stocks) {
+        this.stock = stocks;
     }
 
     /**
@@ -68,15 +68,15 @@ public class Account {
      * Si le stock existe déjà, on augmente la quantité, sinon, on l'ajoute
      */
     public void addStock(Stock stock) {
-        this.stocks.stream()
+        this.stock.stream()
                     .filter(s -> s.getType().equals(stock.getType()))
                     .findFirst()
                     .ifPresentOrElse(s -> { s.setQuantity(s.getQuantity() + stock.getQuantity()); },
-                                    () -> { this.stocks.add(stock); });
+                                    () -> { this.stock.add(stock); });
     }
 
     public void removeStocks(Stock stock) {
-        this.stocks.stream()
+        this.stock.stream()
                     .filter(s -> s.getType().equals(stock.getType()))
                     .findFirst()
                     .ifPresent(s -> { s.setQuantity(s.getQuantity() - stock.getQuantity()); });

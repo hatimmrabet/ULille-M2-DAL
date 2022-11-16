@@ -116,7 +116,7 @@ public class BanqueController {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
-        account.setStocks(accountService.transform(account, stock));
+        account.setStock(accountService.transform(account, stock));
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);

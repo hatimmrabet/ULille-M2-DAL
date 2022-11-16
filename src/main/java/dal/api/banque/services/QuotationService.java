@@ -143,7 +143,7 @@ public class QuotationService {
         List<Stock> ressources = stockService.getRulesForProduct(nameProduct);
         if (ressources != null) {
             for (Stock ressource : ressources) {
-                for (Stock stock : seller.getStocks()) {
+                for (Stock stock : seller.getStock()) {
                     if (stock.getType().equals(ressource.getType())) {
                         productionCost += stock.getPrice() * ressource.getQuantity();
                         break;
@@ -151,7 +151,7 @@ public class QuotationService {
                 }
             }
         } else {
-            for (Stock stock : seller.getStocks()) {
+            for (Stock stock : seller.getStock()) {
                 if (stock.getType().equals(nameProduct)) {
                     productionCost += stock.getPrice();
                     break;

@@ -72,9 +72,9 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(accountEntry.getPassword()));
         // initialisé le stock du compte
         if(stockService.getFornisseurStocks(account.getName()) != null) {
-            account.setStocks(stockService.getFornisseurStocks(account.getName()));
+            account.setStock(stockService.getFornisseurStocks(account.getName()));
         } else {
-            account.setStocks(stockService.getStocks());
+            account.setStock(stockService.getStocks());
         }
         // initialiser le compte avec un solde aleatoire
         account.setMoney(new Random().nextInt(1000000)/100.0);
@@ -120,19 +120,19 @@ public class AccountService {
     public List<Stock> transform(Account account, Stock stock) {
         // diminuer le stock en se basant sur la quantité demandé et les regles de transformation
         for(Stock rulesStock : stockService.getRulesForProduct(stock.getType())) {
-            for(Stock accountStock : account.getStocks()) {
+            for(Stock accountStock : account.getStock()) {
                 if(rulesStock.getType().equals(accountStock.getType())) {
                     accountStock.setQuantity(accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
                 }
             }
         }
         // ajouter le stock produit
-        for(Stock accountStock : account.getStocks()) {
+        for(Stock accountStock : account.getStock()) {
             if(accountStock.getType().equals(stock.getType())) {
                 accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
             }
         }
-        return account.getStocks();
+        return account.getStock();
     }
 
 
