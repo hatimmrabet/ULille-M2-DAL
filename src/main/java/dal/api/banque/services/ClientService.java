@@ -5,6 +5,7 @@ import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.BuyEntry;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,18 +30,18 @@ public class ClientService {
 
     Logger logger = LoggerFactory.getLogger(ClientService.class);
 
-    public Map<String,Map<String,Double>> extraction() {
+    public Map<String,?> extraction() {
         logger.info("Debut extraction");
         //send account information as hsahmap to client
-        List<Account> accounts =accountService.getAccounts();
-        Map<String,Map<String,Double>> accountMap= new HashMap<>();
+        List<Account> accounts = accountService.getAccounts();
+        Map<String,Map<String,?>> accountMap= new HashMap<>();
         for(Account account : accounts) {
-            Map<String,Double> content = new HashMap<>();
+            JSONObject accountJson = new JSONObject();
             for(Stock stock : account.getStock()) {
-                content.put(stock.getType(), (double) stock.getQuantity());
+                accountJson.put(stock.getType(), stock.getQuantity());
             }
-            content.put("compte",account.getMoney());
-            accountMap.put(account.getName(),content);
+            accountJson.put("compte", account.getMoney());
+            accountMap.put(account.getName(), accountJson.toMap());
         }
         logger.info("Available accounts: " + accountMap.size());
         logger.info("Fin extraction");

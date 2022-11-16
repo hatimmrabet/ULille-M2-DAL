@@ -7,8 +7,8 @@ public class QuotationDTO {
     private String id;
     private String seller;
     private String buyer;
-    private double totalHT;
-    private double totalTTC;
+    private double HT;
+    private double TTC;
     private Integer fee;
     private Status status;
 
@@ -30,17 +30,17 @@ public class QuotationDTO {
     public void setBuyer(String buyer) {
         this.buyer = buyer;
     }
-    public double getTotalHT() {
-        return totalHT;
+    public double getHT() {
+        return HT;
     }
-    public void setTotalHT(double totalHT) {
-        this.totalHT = totalHT;
+    public void setHT(double HT) {
+        this.HT = HT;
     }
-    public double getTotalTTC() {
-        return totalTTC;
+    public double getTTC() {
+        return TTC;
     }
-    public void setTotalTTC(double totalTTC) {
-        this.totalTTC = totalTTC;
+    public void setTTC(double TTC) {
+        this.TTC = TTC;
     }
     public Integer getFee() {
         return fee;

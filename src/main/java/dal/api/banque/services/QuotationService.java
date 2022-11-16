@@ -78,8 +78,8 @@ public class QuotationService {
         quotationDTO.setBuyer(quotation.getBuyer().getName());
         quotationDTO.setSeller(quotation.getSeller().getName());
         quotationDTO.setFee(quotation.getFee());
-        quotationDTO.setTotalHT(quotation.getHT());
-        quotationDTO.setTotalTTC(quotation.getTTC());
+        quotationDTO.setHT(quotation.getHT());
+        quotationDTO.setTTC(quotation.getTTC());
         quotationDTO.setStatus(quotation.getStatus());
         return quotationDTO;
     }
@@ -159,6 +159,16 @@ public class QuotationService {
             }
         }
         return productionCost * quantity;
+    }
+
+    public boolean checkCart(List<Stock> cart) {
+        for(Stock stock : cart) {
+            if (!stockService.getStocks().stream().filter(s -> s.getType().equalsIgnoreCase(stock.getType())).findFirst().isPresent()) {
+                logger.info("Stock with name "+stock.getType()+" not found");
+                return false;
+            }
+        }
+        return true;
     }
 
 }
