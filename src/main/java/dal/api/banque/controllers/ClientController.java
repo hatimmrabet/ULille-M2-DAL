@@ -23,7 +23,7 @@ public class ClientController {
     private ClientService clientService;
 
     @GetMapping("/extraction")
-    public ResponseEntity<Map<String,Map<String,Double>>> extraction() {
+    public ResponseEntity<Map<String,?>> extraction() {
 
         return ResponseEntity.ok().body(clientService.extraction());
     }
