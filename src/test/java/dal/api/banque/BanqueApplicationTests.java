@@ -148,11 +148,11 @@ class BanqueApplicationTests {
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
 		assertEquals(accountService.getAccount(qot.getSeller().getName()).getBalance(),
-				1000 + qot.getTotalHT());
+				1000 + qot.getHT());
 		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getBalance(),
-				1000 - qot.getTotalTTC());
+				1000 - qot.getTTC());
 		assertEquals(banqueService.getMyBanque().getCapital(), 1000 +
-				qot.getTotalTTC() - qot.getTotalHT());
+				qot.getTTC() - qot.getHT());
 
 		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStocks()) {
 			if (s.getType().equals("chaise")) {
