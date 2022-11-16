@@ -19,7 +19,6 @@ cache:
 
 java-compile:
   stage: build
-  needs: ["clean"]
   script:
     - mvn $MAVEN_CLI_OPTS compile -DskipTests=true
   artifacts:
