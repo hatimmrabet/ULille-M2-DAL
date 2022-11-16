@@ -6,6 +6,13 @@ variables:
 
 image: maven:3.8-openjdk-17-slim
 
+stages:
+  - build
+  - test
+  - package
+  - build-image
+  - deploy
+
 cache:
   paths:
     - .m2/repository
@@ -15,7 +22,7 @@ java-compile:
   script:
     - mvn $MAVEN_CLI_OPTS compile -DskipTests=true
   artifacts:
-    expire_in: 15 min
+    expire_in: 4 min
     paths: 
       - target/  
 
@@ -37,7 +44,7 @@ unit-tests:
         - target/failsafe-reports/TEST-*.xml
 
 java-package:
-  stage: deploy
+  stage: package
   needs: ["unit-tests"]
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "production"
@@ -56,7 +63,7 @@ java-package:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
 
-  stage: deploy
+  stage: build-image
   needs: ["java-package"]
   services:
     - docker:20.10.16-dind
@@ -71,6 +78,7 @@ java-package:
 .deploy:
   image: alpine:latest
   stage: deploy
+  needs: ["build-image"]
   before_script:
     - apk update
     - apk add --no-cache openssh-client
