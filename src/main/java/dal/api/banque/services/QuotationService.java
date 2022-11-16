@@ -161,4 +161,14 @@ public class QuotationService {
         return productionCost * quantity;
     }
 
+    public boolean checkCart(List<Stock> cart) {
+        for(Stock stock : cart) {
+            if (!stockService.getStocks().stream().filter(s -> s.getType().equalsIgnoreCase(stock.getType())).findFirst().isPresent()) {
+                logger.info("Stock with name "+stock.getType()+" not found");
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

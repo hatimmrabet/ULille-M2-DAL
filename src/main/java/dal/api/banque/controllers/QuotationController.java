@@ -1,18 +1,26 @@
 package dal.api.banque.controllers;
 
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Quotation;
 import dal.api.banque.models.Status;
 import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.QuotationService;
-
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -46,15 +54,25 @@ public class QuotationController {
             @RequestParam String buyer,
             @RequestParam String seller) {
         Account account = accountService.getAccount(seller);
-        if (account == null)
+        if (account == null )
         {
             logger.info("Compte " + seller + " n'existe pas");            
-            return ResponseEntity.badRequest().body("Account not found");
+            return ResponseEntity.badRequest().body("Seller account not found");
         }
         if (!accountService.checkPassword(seller, password))
         {
             logger.info("Mot de passe incorrect");            
             return ResponseEntity.badRequest().body("Wrong password");
+        }
+        if (accountService.getAccount(buyer) == null )
+        {
+            logger.info("Compte " + buyer + " n'existe pas");            
+            return ResponseEntity.badRequest().body("Buyer account not found");
+        }
+        if(!quotationService.checkCart(quotationEntry.getCart()))
+        {
+            logger.info("Panier invalide");
+            return ResponseEntity.badRequest().body("Invalid cart");
         }
         Quotation quotation = quotationService.createQuotation(quotationEntry, buyer, seller);
         logger.info("Quotation " + quotation.getId() + " added");
