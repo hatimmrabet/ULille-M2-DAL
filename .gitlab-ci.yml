@@ -22,7 +22,7 @@ java-compile:
   script:
     - mvn $MAVEN_CLI_OPTS compile -DskipTests=true
   artifacts:
-    expire_in: 4 min
+    expire_in: 5 min
     paths: 
       - target/  
 
@@ -55,6 +55,7 @@ java-package:
     name: "Jar for $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
     paths:
       - "target/banque-0.0.1-SNAPSHOT.jar"
+    expire_in: 5 min
 
 .docker-build:
   image: docker:20.10.16
