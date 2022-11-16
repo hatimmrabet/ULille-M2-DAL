@@ -104,7 +104,7 @@ public class BanqueController {
     public ResponseEntity<?> transform(@RequestHeader("password") String password,
             @PathParam("name") String name,
             @RequestBody Stock stock) {
-        logger.info("Transformation du produit "+stock.getName()+", qty: "+stock.getQuantity()+" de "+name);
+        logger.info("Transformation du produit "+stock.getType()+", qty: "+stock.getQuantity()+" de "+name);
         Account account = accountService.getAccount(name);
         if (account == null)
         {
@@ -116,7 +116,7 @@ public class BanqueController {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
-        account.setStocks(accountService.transform(account, stock));
+        account.setStock(accountService.transform(account, stock));
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);

@@ -44,12 +44,12 @@ public class QuotationService {
         int fee = accountRepository.findByName(buyer).getFee();
         List<Stock> stocks = quotationEntry.getCart();
         double totalHT = stocks.get(0).getPrice()*stocks.get(0).getQuantity();
-        double productionCost = getProductionCost(stocks.get(0).getName(), accountRepository.findByName(buyer).getId(),
+        double productionCost = getProductionCost(stocks.get(0).getType(), accountRepository.findByName(buyer).getId(),
                 stocks.get(0).getQuantity());
         quotation.setFee(fee);
-        quotation.setTotalHT(totalHT);
+        quotation.setHT(totalHT);
         double totalTTC = totalHT + totalHT * fee / 100;
-        quotation.setTotalTTC(totalTTC);
+        quotation.setTTC(totalTTC);
         if (productionCost >= totalTTC) {
             quotation.setStatus(Status.REFUSED);
         } else {
@@ -78,8 +78,8 @@ public class QuotationService {
         quotationDTO.setBuyer(quotation.getBuyer().getName());
         quotationDTO.setSeller(quotation.getSeller().getName());
         quotationDTO.setFee(quotation.getFee());
-        quotationDTO.setTotalHT(quotation.getTotalHT());
-        quotationDTO.setTotalTTC(quotation.getTotalTTC());
+        quotationDTO.setTotalHT(quotation.getHT());
+        quotationDTO.setTotalTTC(quotation.getTTC());
         quotationDTO.setStatus(quotation.getStatus());
         return quotationDTO;
     }
@@ -113,13 +113,13 @@ public class QuotationService {
         Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
         Account seller = accountRepository.findByName(quotation.getSeller().getName());
         logger.info("Buyer: " + buyer.getName() + " and seller: " + seller.getName());
-        buyer.setBalance(buyer.getBalance() - quotation.getTotalTTC());
-        seller.setBalance(seller.getBalance() + quotation.getTotalHT());
-        logger.info("Buyer balance: " + buyer.getBalance() + " and seller balance: " + seller.getBalance());
+        buyer.setMoney(buyer.getMoney() - quotation.getTTC());
+        seller.setMoney(seller.getMoney() + quotation.getHT());
+        logger.info("Buyer balance: " + buyer.getMoney() + " and seller balance: " + seller.getMoney());
         Banque banque = banqueRepository.findById(BanqueService.BANQUE_ID).get();
         buyer.addStock(quotation.getCart().get(0));
         seller.removeStocks(quotation.getCart().get(0));
-        banque.setCapital(banque.getCapital() + quotation.getTotalTTC() - quotation.getTotalHT());
+        banque.setCapital(banque.getCapital() + quotation.getTTC() - quotation.getHT());
         accountRepository.save(buyer);
         accountRepository.save(seller);
         banqueRepository.save(banque);
@@ -143,16 +143,16 @@ public class QuotationService {
         List<Stock> ressources = stockService.getRulesForProduct(nameProduct);
         if (ressources != null) {
             for (Stock ressource : ressources) {
-                for (Stock stock : seller.getStocks()) {
-                    if (stock.getName().equals(ressource.getName())) {
+                for (Stock stock : seller.getStock()) {
+                    if (stock.getType().equals(ressource.getType())) {
                         productionCost += stock.getPrice() * ressource.getQuantity();
                         break;
                     }
                 }
             }
         } else {
-            for (Stock stock : seller.getStocks()) {
-                if (stock.getName().equals(nameProduct)) {
+            for (Stock stock : seller.getStock()) {
+                if (stock.getType().equals(nameProduct)) {
                     productionCost += stock.getPrice();
                     break;
                 }

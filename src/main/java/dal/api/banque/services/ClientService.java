@@ -36,10 +36,10 @@ public class ClientService {
         Map<String,Map<String,Double>> accountMap= new HashMap<>();
         for(Account account : accounts) {
             Map<String,Double> content = new HashMap<>();
-            for(Stock stock : account.getStocks()) {
-                content.put(stock.getName(), (double) stock.getQuantity());
+            for(Stock stock : account.getStock()) {
+                content.put(stock.getType(), (double) stock.getQuantity());
             }
-            content.put("compte",account.getBalance());
+            content.put("compte",account.getMoney());
             accountMap.put(account.getName(),content);
         }
         logger.info("Available accounts: " + accountMap.size());
@@ -67,10 +67,10 @@ public class ClientService {
         Banque banque = banqueService.getMyBanque();
         //update the account
         double frais = (quantite*prix)*account.getFee()/100;
-        account.setBalance(account.getBalance()+(quantite*prix)-frais);
+        account.setMoney(account.getMoney()+(quantite*prix)-frais);
         banque.setCapital(banque.getCapital()+ frais);
         //update the stock
-        Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(produit)).findFirst().get();
+        Stock stock = account.getStock().stream().filter(stock1 -> stock1.getType().equals(produit)).findFirst().get();
         stock.setQuantity(stock.getQuantity()-quantite);
         stock.setQuantity((int) stock.getQuantity()-quantite);
         logger.info("Details of the transaction: fournisseur: " + fournisseur +" produit: " + produit + " qty: " + quantite + " prix: " + prix);
@@ -88,15 +88,15 @@ public class ClientService {
         }
         Banque banque = banqueService.getMyBanque();
         //update the account
-        double priceOfStock =stockService.getStocks().stream().filter(stock -> stock.getName().equals(buyEntry.getType())).findFirst().get().getPrice();
+        double priceOfStock =stockService.getStocks().stream().filter(stock -> stock.getType().equals(buyEntry.getType())).findFirst().get().getPrice();
         double feeOfProduct = (buyEntry.getQuantity()*priceOfStock*account.getFee()/100);
         System.out.println(feeOfProduct);
         double total = (buyEntry.getQuantity()*priceOfStock)+feeOfProduct;
 
-        account.setBalance(account.getBalance()-total);
+        account.setMoney(account.getMoney()-total);
         banque.setCapital(banque.getCapital()+ feeOfProduct);
         //update the stock
-        Stock stock = account.getStocks().stream().filter(stock1 -> stock1.getName().equals(buyEntry.getType())).findFirst().get();
+        Stock stock = account.getStock().stream().filter(stock1 -> stock1.getType().equals(buyEntry.getType())).findFirst().get();
         stock.setQuantity((int) stock.getQuantity()+buyEntry.getQuantity());
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);

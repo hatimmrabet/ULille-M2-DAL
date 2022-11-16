@@ -72,12 +72,12 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(accountEntry.getPassword()));
         // initialisé le stock du compte
         if(stockService.getFornisseurStocks(account.getName()) != null) {
-            account.setStocks(stockService.getFornisseurStocks(account.getName()));
+            account.setStock(stockService.getFornisseurStocks(account.getName()));
         } else {
-            account.setStocks(stockService.getStocks());
+            account.setStock(stockService.getStocks());
         }
         // initialiser le compte avec un solde aleatoire
-        account.setBalance(new Random().nextInt(1000000)/100.0);
+        account.setMoney(new Random().nextInt(1000000)/100.0);
         // donner des frais de transaction aleatoire
         if(stockService.getFournisseurFrais(account.getName()) != -1) {
             account.setFee(stockService.getFournisseurFrais(account.getName()));
@@ -119,20 +119,20 @@ public class AccountService {
      */
     public List<Stock> transform(Account account, Stock stock) {
         // diminuer le stock en se basant sur la quantité demandé et les regles de transformation
-        for(Stock rulesStock : stockService.getRulesForProduct(stock.getName())) {
-            for(Stock accountStock : account.getStocks()) {
-                if(rulesStock.getName().equals(accountStock.getName())) {
+        for(Stock rulesStock : stockService.getRulesForProduct(stock.getType())) {
+            for(Stock accountStock : account.getStock()) {
+                if(rulesStock.getType().equals(accountStock.getType())) {
                     accountStock.setQuantity(accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
                 }
             }
         }
         // ajouter le stock produit
-        for(Stock accountStock : account.getStocks()) {
-            if(accountStock.getName().equals(stock.getName())) {
+        for(Stock accountStock : account.getStock()) {
+            if(accountStock.getType().equals(stock.getType())) {
                 accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
             }
         }
-        return account.getStocks();
+        return account.getStock();
     }
 
 

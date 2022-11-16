@@ -14,8 +14,8 @@ public class Quotation
     @DBRef
     private Account buyer;
     private List<Stock> cart;
-    private double totalHT;
-    private double totalTTC;
+    private double HT;
+    private double TTC;
     private int fee;
     private Status status;
 
@@ -52,20 +52,20 @@ public class Quotation
         this.cart = cart;
     }
 
-    public double getTotalHT() {
-        return totalHT;
+    public double getHT() {
+        return HT;
     }
 
-    public void setTotalHT(double totalHT) {
-        this.totalHT = totalHT;
+    public void setHT(double HT) {
+        this.HT = HT;
     }
 
-    public double getTotalTTC() {
-        return totalTTC;
+    public double getTTC() {
+        return TTC;
     }
 
-    public void setTotalTTC(double totalTTC) {
-        this.totalTTC = totalTTC;
+    public void setTTC(double TTC) {
+        this.TTC = TTC;
     }
 
     public int getFee() {

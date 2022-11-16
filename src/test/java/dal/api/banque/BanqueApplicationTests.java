@@ -60,9 +60,9 @@ class BanqueApplicationTests {
 		entry.setId("1");
 		entry.setName("test");
 		entry.setPassword("test");
-		entry.setBalance(1000);
+		entry.setMoney(1000);
 		entry.setFee(16);
-		entry.setStocks(stockService.getStocks());
+		entry.setStock(stockService.getStocks());
 		accountService.saveAccount(entry);
 		entry.setId("2");
 		entry.setName("test2");
@@ -80,18 +80,18 @@ class BanqueApplicationTests {
 	void testTransformation() {
 		Account entry = accountService.getAccount("test");
 		// check if have 10 products
-		assertTrue(entry.getStocks().size() == 10);
+		assertTrue(entry.getStock().size() == 10);
 		Stock chaise = new Stock("chaise", 100, 100);
 		accountService.transform(entry, chaise);
 		// check balance didn't change
-		assertTrue(entry.getBalance() == 1000);
+		assertTrue(entry.getMoney() == 1000);
 		// check stock quantity changed
-		for (Stock s : entry.getStocks()) {
-			if (s.getName().equals(chaise.getName())) {
+		for (Stock s : entry.getStock()) {
+			if (s.getType().equals(chaise.getType())) {
 				assertTrue(s.getQuantity() == 100);
 			} else {
-				for (Stock ressource : stockService.getRulesForProduct(chaise.getName())) {
-					if (s.getName().equals(ressource.getName())) {
+				for (Stock ressource : stockService.getRulesForProduct(chaise.getType())) {
+					if (s.getType().equals(ressource.getType())) {
 						assertTrue(s.getQuantity() == -ressource.getQuantity() * chaise.getQuantity());
 						break;
 					}
@@ -99,7 +99,7 @@ class BanqueApplicationTests {
 			}
 		}
 		// check if have 10 products
-		assertTrue(entry.getStocks().size() == 10);
+		assertTrue(entry.getStock().size() == 10);
 	}
 
 	@Test
@@ -113,10 +113,10 @@ class BanqueApplicationTests {
 		// check quotation status
 		assertTrue(qot.getStatus().equals(Status.REFUSED));
 		// check still have same money
-		assertTrue(accountService.getAccount("test").getBalance() == 1000);
-		assertTrue(accountService.getAccount("test2").getBalance() == 1000);
+		assertTrue(accountService.getAccount("test").getMoney() == 1000);
+		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
-		for (Stock s : accountService.getAccount("test").getStocks()) {
+		for (Stock s : accountService.getAccount("test").getStock()) {
 			assertTrue(s.getQuantity() == 0);
 		}
 		// supress quotation
@@ -134,10 +134,10 @@ class BanqueApplicationTests {
 		// check quotation status
 		assertTrue(qot.getStatus().equals(Status.PENDING));
 		// check still have same money
-		assertTrue(accountService.getAccount("test").getBalance() == 1000);
-		assertTrue(accountService.getAccount("test2").getBalance() == 1000);
+		assertTrue(accountService.getAccount("test").getMoney() == 1000);
+		assertTrue(accountService.getAccount("test2").getMoney() == 1000);
 		// check quantity of products
-		for (Stock s : accountService.getAccount("test").getStocks()) {
+		for (Stock s : accountService.getAccount("test").getStock()) {
 			assertTrue(s.getQuantity() == 0);
 		}
 	}
@@ -147,15 +147,15 @@ class BanqueApplicationTests {
 		Quotation qot = quotationRepository.findAll().get(0);
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
-		assertEquals(accountService.getAccount(qot.getSeller().getName()).getBalance(),
-				1000 + qot.getTotalHT());
-		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getBalance(),
-				1000 - qot.getTotalTTC());
+		assertEquals(accountService.getAccount(qot.getSeller().getName()).getMoney(),
+				1000 + qot.getHT());
+		assertEquals(accountService.getAccount(qot.getBuyer().getName()).getMoney(),
+				1000 - qot.getTTC());
 		assertEquals(banqueService.getMyBanque().getCapital(), 1000 +
-				qot.getTotalTTC() - qot.getTotalHT());
+				qot.getTTC() - qot.getHT());
 
-		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStocks()) {
-			if (s.getName().equals("chaise")) {
+		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStock()) {
+			if (s.getType().equals("chaise")) {
 				assertEquals(2, s.getQuantity());
 			}
 		}
