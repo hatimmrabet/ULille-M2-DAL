@@ -20,6 +20,10 @@ java-compile:
       - target/  
 
 unit-tests:
+  image: maven:3.8-openjdk-17-slim
+  services:
+    - name: mongo:6.0.2
+      alias: mongo
   stage: test
   needs: ["java-compile"]
   script:
