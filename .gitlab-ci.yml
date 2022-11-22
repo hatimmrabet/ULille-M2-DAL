@@ -132,4 +132,4 @@ test-preprod:
   needs: ["deploy-to-staging"]
   environment: "staging"
   script:
-    - '[[ $(curl --write-out "%{http_code}\n" --silent --output /dev/null http://SERVER_IP:8080/bank) == 200 ]]'
+    - '[[ $(curl --write-out "%{http_code}\n" --silent --output /dev/null http://$SERVER_IP:8080/bank) == 200 ]]'
