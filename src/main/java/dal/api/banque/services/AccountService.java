@@ -136,4 +136,9 @@ public class AccountService {
     }
 
 
+    public List<Stock> echangerStock(Account account, Stock stock) {
+        Stock stockAccount = account.getStock().stream().filter(s -> s.getType().equals(stock.getType())).findFirst().get();
+        stockAccount.setQuantity(stockAccount.getQuantity() + stock.getQuantity());
+        return account.getStock();
+    }
 }

@@ -140,7 +140,7 @@ public class BanqueController {
     }
     
 
-    @GetMapping("/exchange")
+    @PutMapping("/exchange")
     public ResponseEntity<?> echangerStock(@PathParam("name") String name, @RequestBody Stock stock) {
         logger.info("Echange du stock de " + name);
         Account account = accountService.getAccount(name);
@@ -148,7 +148,7 @@ public class BanqueController {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-
+        account.setStock(accountService.echangerStock(account, stock));
 
 
         logger.info("Stock changé : " + account.getStock().size());
