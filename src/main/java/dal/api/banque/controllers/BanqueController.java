@@ -78,7 +78,6 @@ public class BanqueController {
         {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
-
         }
         return ResponseEntity.ok().body(clientService.extraction(name).toMap());
     }
@@ -151,9 +150,7 @@ public class BanqueController {
             return ResponseEntity.badRequest().body("Account not found");
         }
         account.setStock(accountService.echangerStock(account, stock));
-
-
-        logger.info("Stock changé : " + account.getStock().size());
+        logger.info("Echange du stock effectue");
         return ResponseEntity.ok().body(account.getStock());
     }
 
