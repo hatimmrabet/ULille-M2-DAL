@@ -2,6 +2,7 @@ package dal.api.banque.controllers;
 
 import javax.websocket.server.PathParam;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -120,6 +122,37 @@ public class BanqueController {
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);
+    }
+
+
+    @GetMapping("/stock")
+    public ResponseEntity<?> stocksDuFournisseur(@PathParam("name") String name) {
+        logger.info("Recuperation du stock de "+name);
+        Account account = accountService.getAccount(name);
+        if (account == null) {
+            logger.info("Compte " + name + " n'existe pas");
+            return ResponseEntity.badRequest().body("Account not found");
+        }
+        logger.info("Stock recupere, size stock : "+account.getStock().size());
+        JSONObject json = new JSONObject();
+        json.put("stock", account.getStock());
+        return ResponseEntity.ok().body(json);
+    }
+    
+
+    @GetMapping("/exchange")
+    public ResponseEntity<?> echangerStock(@PathParam("name") String name, @RequestBody Stock stock) {
+        logger.info("Echange du stock de " + name);
+        Account account = accountService.getAccount(name);
+        if (account == null) {
+            logger.info("Compte " + name + " n'existe pas");
+            return ResponseEntity.badRequest().body("Account not found");
+        }
+
+
+
+        logger.info("Stock changé : " + account.getStock().size());
+        return ResponseEntity.ok().body(account.getStock());
     }
 
 }
