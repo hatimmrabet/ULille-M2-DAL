@@ -22,6 +22,7 @@ import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
+import dal.api.banque.services.ClientService;
 
 
 @RestController
@@ -35,10 +36,12 @@ public class BanqueController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private ClientService clientService;
+
     Logger logger = LoggerFactory.getLogger(BanqueController.class);
 
-    /* *********************************************************************************************************** */
-
+   
     /**
      * Avoir les informations de notre banque
      */
@@ -133,8 +136,7 @@ public class BanqueController {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        JSONObject json = new JSONObject();
-        json.put("stock", account.getStock());
+        JSONObject json = clientService.extraction(account.getName());
         logger.info("Stock recupere, size stock : "+account.getStock().size());
         return ResponseEntity.ok().body(json.toMap());
     }

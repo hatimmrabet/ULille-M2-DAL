@@ -141,4 +141,5 @@ public class AccountService {
         stockAccount.setQuantity(stockAccount.getQuantity() + stock.getQuantity());
         return account.getStock();
     }
+
 }
