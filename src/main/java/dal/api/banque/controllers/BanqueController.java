@@ -80,7 +80,7 @@ public class BanqueController {
             return ResponseEntity.badRequest().body("Wrong password");
 
         }
-        return ResponseEntity.ok().body(account);
+        return ResponseEntity.ok().body(clientService.extraction(name).toMap());
     }
 
     /**
