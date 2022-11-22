@@ -133,10 +133,10 @@ public class BanqueController {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        logger.info("Stock recupere, size stock : "+account.getStock().size());
         JSONObject json = new JSONObject();
         json.put("stock", account.getStock());
-        return ResponseEntity.ok().body(json);
+        logger.info("Stock recupere, size stock : "+account.getStock().size());
+        return ResponseEntity.ok().body(json.toMap());
     }
     
 
