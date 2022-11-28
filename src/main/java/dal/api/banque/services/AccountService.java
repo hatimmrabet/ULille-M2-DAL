@@ -96,15 +96,6 @@ public class AccountService {
         return account;
     }
 
-    /**
-     * Ajouter un stock a un compte, on ajoute que la quantité si le stock existe
-     * deja
-     */
-    public void addStockToAccount(Account account, Stock stock) {
-        // utiliser notre fonction pour l'ajout d'un stock
-        account.addStock(stock);
-        accountRepository.save(account);
-    }
 
     /**
      * Ajouter un compte a la base de donnees
@@ -126,7 +117,7 @@ public class AccountService {
      * @return le nouveau stock
      * @throws StockException
      */
-    public List<Stock> transform(Account account, Stock produitFini) throws StockException {
+    public void transform(Account account, Stock produitFini) throws StockException {
         // equilibrer les stocks
         // boucler sur les ressources necessaires pour le produit fini
         for (Stock rulesStock : stockService.getRulesForProduct(produitFini.getType())) {
@@ -151,11 +142,11 @@ public class AccountService {
                             // on ajoute le stock dans notre banque
                             account.addStock(updateStock);
                             logger.info("Stock ajoute dans notre banque");
-                            saveAccount(account);
                         } else {
                             logger.error("Erreur lors de la modification du stock dans une autre banque");
                         }
                     } else {
+                        saveAccount(account);
                         // si on a pas trouvé de stock dans une autre banque
                         logger.info("Pas assez de stock pour " + rulesStock.getType() + " dans toutes les banques");
                         throw new StockException("Pas assez de stock pour " + rulesStock.getType() + " dans toutes les banques");
@@ -180,7 +171,8 @@ public class AccountService {
         }
         // ajouter le produit fini
         account.addStock(produitFini);
-        return account.getStock();
+        // sauvegarder le compte
+        saveAccount(account);
     }
 
     public String findCorrectStockInBank(Account account, String type, int quantity) {
