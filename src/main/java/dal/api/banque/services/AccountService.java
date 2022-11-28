@@ -134,7 +134,7 @@ public class AccountService {
             if(accountStock != null)
             {
                 // si on a pas assez de ressources
-                if (accountStock.getQuantity() < qtyNecessaire) {                                                                             // ressources
+                if (accountStock.getQuantity() < qtyNecessaire) {                                                                             
                     int diffStock = qtyNecessaire - accountStock.getQuantity();
                     // trouver le stock dans une autre banque
                     String ip = findCorrectStockInBank(account, rulesStock.getType(), diffStock);                    
@@ -144,7 +144,7 @@ public class AccountService {
                         String url = "http://" + ip + "/bank/exchange" + "?name=" + account.getName();
                         HttpEntity<Stock> request = new HttpEntity<>(updateStock);
                         RestTemplate restTemplate = new RestTemplate();
-                        ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.PUT, request, JSONObject.class);
+                        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
                         if(response.getStatusCode().is2xxSuccessful()) {
                             logger.info("Stock modifié dans une autre banque");
                             // on ajoute le stock dans notre banque
@@ -183,21 +183,23 @@ public class AccountService {
     }
 
     public String findCorrectStockInBank(Account account, String type, int quantity) {
-        logger.info("searching for " + type + " with quantity "+quantity+" in other banks");
+        logger.info("Cherche " + quantity + " " + type + " dans d'autres banques");
         RestTemplate restTemplate = new RestTemplate();
         //request each bank
         for(String ip : BanqueService.banques_ip.values()){
+            logger.info("Requesting " + ip);
             String url = "http://" + ip + "/bank/stock?name=" + account.getName();
             try{
-                ResponseEntity<JSONObject> response = restTemplate.getForEntity(url, JSONObject.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
                 if(response.getStatusCode().is2xxSuccessful())
                 {
-                    JSONObject json = response.getBody();
+                    logger.info("Succesful response from " + ip);
+                    JSONObject json = new JSONObject(response.getBody());
                     if(json != null) {
                         if (json.has("stock") && json.getJSONObject("stock").has(type)) {
                             int quantityInBank = json.getJSONObject("stock").getInt(type);
                             if (quantityInBank >= quantity) {
-                                logger.info("found " + type + " with quantity "+quantity+" in bank "+ip);
+                                logger.info("Found " + type + " with quantity "+quantity+" in bank "+ip);
                                 return ip;
                             }
                         }

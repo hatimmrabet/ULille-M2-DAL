@@ -56,11 +56,6 @@ public class BanqueController {
         return banqueService.createBanque();
     }
 
-    /*
-     * *****************************************************************************
-     * ******************************
-     */
-
     /**
      * Le detail d'un compte
      */
@@ -96,11 +91,6 @@ public class BanqueController {
         logger.info("Compte " + accountEntry.getName() + " cree");
         return ResponseEntity.status(201).body(account);
     }
-
-    /*
-     * *****************************************************************************
-     * ******************************
-     */
 
     /**
      * Transformer un produit vers un autre
