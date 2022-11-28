@@ -112,11 +112,10 @@ public class BanqueController {
             return ResponseEntity.badRequest().body("Wrong password");
         }
         try {
-            account.setStock(accountService.transform(account, produitFini));
+            accountService.transform(account, produitFini);
         } catch (StockException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);
     }
@@ -129,8 +128,8 @@ public class BanqueController {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
+        // preparer le json
         JSONObject json = clientService.extraction(account.getName());
-        // delelete field money
         json.remove("money");
         logger.info("Stock recupere, size stock : " + account.getStock().size());
         return ResponseEntity.ok().body(json.toMap());
@@ -157,7 +156,6 @@ public class BanqueController {
     @PostMapping("/buy")
     public ResponseEntity<Boolean> buy(@PathParam("name") String name, @RequestBody BuyEntry buyEntry) {
         return ResponseEntity.ok().body(clientService.buy(name, buyEntry));
-
     }
 
 }

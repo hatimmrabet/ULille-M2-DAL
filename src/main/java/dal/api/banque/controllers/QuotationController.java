@@ -76,7 +76,7 @@ public class QuotationController {
         }
         Quotation quotation = quotationService.createQuotation(quotationEntry, buyer, seller);
         logger.info("Quotation " + quotation.getId() + " added");
-        return ResponseEntity.status(201).body(quotationService.convertQuotationToQuotationDTO(quotation));
+        return ResponseEntity.status(201).body(quotationService.buildQuotationResponse(quotation).toMap());
     }
 
     @PostMapping

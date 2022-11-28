@@ -163,7 +163,7 @@ class BanqueApplicationTests {
 
 		for (Stock s : accountService.getAccount(qot.getBuyer().getName()).getStock()) {
 			if (s.getType().equals("chaise")) {
-				assertEquals(2, s.getQuantity());
+				assertEquals(5, s.getQuantity());
 			}
 		}
 
