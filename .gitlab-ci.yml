@@ -131,5 +131,7 @@ test-preprod:
   stage: post-deploy
   needs: ["deploy-to-staging"]
   environment: "staging"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
   script:
     - '[[ $(curl --write-out "%{http_code}\n" --silent --output /dev/null http://$SERVER_IP:8080/bank) == 200 ]]'
