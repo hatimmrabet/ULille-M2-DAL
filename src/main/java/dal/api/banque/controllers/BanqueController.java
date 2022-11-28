@@ -134,6 +134,8 @@ public class BanqueController {
             return ResponseEntity.badRequest().body("Account not found");
         }
         JSONObject json = clientService.extraction(account.getName());
+        // delelete field money
+        json.remove("money");
         logger.info("Stock recupere, size stock : " + account.getStock().size());
         return ResponseEntity.ok().body(json.toMap());
     }
