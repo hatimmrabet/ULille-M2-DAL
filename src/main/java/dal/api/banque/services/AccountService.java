@@ -163,7 +163,7 @@ public class AccountService {
         }
         // enlever les ressources necessaires
         for(Stock rulesStock : stockService.getRulesForProduct(produitFini.getType())) {
-            logger.info("Enlever "+rulesStock.getQuantity() * produitFini.getQuantity()+" de "+rulesStock.getType());
+            logger.info("Enlever "+rulesStock.getQuantity() * produitFini.getQuantity()+" "+rulesStock.getType());
             Stock accountStock = account.getStock(rulesStock.getType());
             int qtyNecessaire = rulesStock.getQuantity() * produitFini.getQuantity();
             if(accountStock != null)
@@ -186,7 +186,7 @@ public class AccountService {
         logger.info("searching for " + type + " with quantity "+quantity+" in other banks");
         RestTemplate restTemplate = new RestTemplate();
         //request each bank
-        for(String ip : BanqueService.banques_ip.keySet()){
+        for(String ip : BanqueService.banques_ip.values()){
             String url = "http://" + ip + "/bank/stock?name=" + account.getName();
             try{
                 ResponseEntity<JSONObject> response = restTemplate.getForEntity(url, JSONObject.class);
