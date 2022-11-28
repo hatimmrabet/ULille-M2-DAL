@@ -1,18 +1,22 @@
 package dal.api.banque.services;
 
-import dal.api.banque.models.*;
-import dal.api.banque.models.entry.QuotationEntry;
-import dal.api.banque.models.response.QuotationDTO;
-import dal.api.banque.repositories.AccountRepository;
-import dal.api.banque.repositories.BanqueRepository;
-import dal.api.banque.repositories.QuotationRepository;
+import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import dal.api.banque.models.Account;
+import dal.api.banque.models.Banque;
+import dal.api.banque.models.Quotation;
+import dal.api.banque.models.Status;
+import dal.api.banque.models.Stock;
+import dal.api.banque.models.entry.QuotationEntry;
+import dal.api.banque.repositories.AccountRepository;
+import dal.api.banque.repositories.BanqueRepository;
+import dal.api.banque.repositories.QuotationRepository;
 
 @Service
 public class QuotationService {
@@ -72,16 +76,13 @@ public class QuotationService {
         return quotation;
     }
 
-    public QuotationDTO convertQuotationToQuotationDTO(Quotation quotation) {
-        QuotationDTO quotationDTO = new QuotationDTO();
-        quotationDTO.setId(quotation.getId());
-        quotationDTO.setBuyer(quotation.getBuyer().getName());
-        quotationDTO.setSeller(quotation.getSeller().getName());
-        quotationDTO.setFee(quotation.getFee());
-        quotationDTO.setHT(quotation.getHT());
-        quotationDTO.setTTC(quotation.getTTC());
-        quotationDTO.setStatus(quotation.getStatus());
-        return quotationDTO;
+    public JSONObject buildQuotationResponse(Quotation quotation) {
+        JSONObject response = new JSONObject();
+        response.put("id", quotation.getId());
+        response.put("fee", quotation.getFee());
+        response.put("HT", quotation.getHT());
+        response.put("TTC", quotation.getTTC());
+        return response;
     }
 
     public boolean validateQuotation(String id) {
