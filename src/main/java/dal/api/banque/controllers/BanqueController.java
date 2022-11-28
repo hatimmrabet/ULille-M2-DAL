@@ -108,8 +108,8 @@ public class BanqueController {
     @PutMapping("/transform")
     public ResponseEntity<?> transform(@RequestHeader("password") String password,
             @PathParam("name") String name,
-            @RequestBody Stock stock) {
-        logger.info("Transformation du produit " + stock.getType() + ", qty: " + stock.getQuantity() + " de " + name);
+            @RequestBody Stock produitFini) {
+        logger.info("Transformation du produit " + produitFini.getType() + ", qty: " + produitFini.getQuantity() + " de " + name);
         Account account = accountService.getAccount(name);
         if (account == null) {
             logger.info("Compte " + name + " n'existe pas");
@@ -119,7 +119,7 @@ public class BanqueController {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
-        account.setStock(accountService.transform(account, stock));
+        account.setStock(accountService.transform(account, produitFini));
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);

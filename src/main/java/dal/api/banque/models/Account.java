@@ -63,6 +63,15 @@ public class Account {
         this.stock = stocks;
     }
 
+    public Stock getStock(String name) {
+        for (Stock stock : this.stock) {
+            if (stock.getType().equals(name)) {
+                return stock;
+            }
+        }
+        return null;
+    }
+
     /**
      * Ajouter un stock à la liste des stocks de l'account
      * Si le stock existe déjà, on augmente la quantité, sinon, on l'ajoute
