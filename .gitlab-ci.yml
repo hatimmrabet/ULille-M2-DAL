@@ -12,6 +12,7 @@ stages:
   - package
   - build-image
   - deploy
+  - post-deploy
 
 cache:
   paths:
@@ -125,3 +126,10 @@ deploy-to-production:
      - if: '$CI_COMMIT_BRANCH == "production"'
        when: manual
   environment: "production"
+
+test-preprod:
+  stage: post-deploy
+  needs: ["deploy-to-staging"]
+  environment: "staging"
+  script:
+    - '[[ $(curl --write-out "%{http_code}\n" --silent --output /dev/null http://$SERVER_IP:8080/bank) == 200 ]]'

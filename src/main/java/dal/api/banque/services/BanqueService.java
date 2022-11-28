@@ -1,5 +1,8 @@
 package dal.api.banque.services;
 
+import java.util.HashMap;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,20 +11,26 @@ import org.springframework.stereotype.Service;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.repositories.BanqueRepository;
+import dal.api.banque.utils.FileManager;
 
 @Service
 public class BanqueService {
 
-    /**
-     * l'ID unique de notre banque
-     */
     public static final String BANQUE_ID = "14";
+    public static HashMap<String, String> banques_ip = new HashMap<String, String>();
 
     @Autowired
     private BanqueRepository banqueRepository;
 
     @Autowired
     private AccountService accountService;
+
+    public BanqueService() {
+        JSONObject obj = new JSONObject(FileManager.getFileContent("static-bank-ip.json"));
+        for (String key : obj.keySet()) {
+            banques_ip.put(key, obj.getString(key));
+        }
+    }
 
     Logger logger = LoggerFactory.getLogger(BanqueService.class);
 
@@ -72,4 +81,5 @@ public class BanqueService {
     public void saveBanque(Banque banque) {
         banqueRepository.save(banque);
     }
+
 }
