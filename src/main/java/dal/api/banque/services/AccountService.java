@@ -146,10 +146,10 @@ public class AccountService {
                         RestTemplate restTemplate = new RestTemplate();
                         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
                         if(response.getStatusCode().is2xxSuccessful()) {
-                            logger.info("Stock modifié dans une autre banque");
+                            logger.info("Stock modifie dans une autre banque");
                             // on ajoute le stock dans notre banque
                             account.addStock(updateStock);
-                            logger.info("Stock ajouté dans notre banque");
+                            logger.info("Stock ajoute dans notre banque");
                         } else {
                             logger.error("Erreur lors de la modification du stock dans une autre banque");
                         }
