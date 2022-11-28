@@ -21,7 +21,6 @@ public class ClientController {
 
     @GetMapping("/extraction")
     public ResponseEntity<Map<String,?>> extraction() {
-
         return ResponseEntity.ok().body(clientService.extraction());
     }
 

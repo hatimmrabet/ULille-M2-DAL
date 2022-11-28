@@ -8,13 +8,12 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
+import dal.api.banque.exceptions.StockException;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
@@ -125,8 +124,9 @@ public class AccountService {
      * Ajouter les produits demandé et diminué le nombre de ressources necessaires
      * 
      * @return le nouveau stock
+     * @throws StockException
      */
-    public List<Stock> transform(Account account, Stock produitFini) {
+    public List<Stock> transform(Account account, Stock produitFini) throws StockException {
         // equilibrer les stocks
         // boucler sur les ressources necessaires pour le produit fini
         for (Stock rulesStock : stockService.getRulesForProduct(produitFini.getType())) {
@@ -151,14 +151,14 @@ public class AccountService {
                             // on ajoute le stock dans notre banque
                             account.addStock(updateStock);
                             logger.info("Stock ajoute dans notre banque");
+                            saveAccount(account);
                         } else {
                             logger.error("Erreur lors de la modification du stock dans une autre banque");
                         }
                     } else {
                         // si on a pas trouvé de stock dans une autre banque
                         logger.info("Pas assez de stock pour " + rulesStock.getType() + " dans toutes les banques");
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                "Pas assez de stock pour " + rulesStock.getType() + " dans toutes les banques");
+                        throw new StockException("Pas assez de stock pour " + rulesStock.getType() + " dans toutes les banques");
                     }
                 }
             }
@@ -174,8 +174,7 @@ public class AccountService {
                     accountStock.setQuantity(accountStock.getQuantity() - qtyNecessaire);
                 } else {
                     logger.error("Transformation impossible, pas assez de ressources pour " + rulesStock.getType());
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                            "Pas assez de ressources pour " + rulesStock.getType());
+                    throw new StockException("Pas assez de ressources pour " + rulesStock.getType());
                 }
             }
         }

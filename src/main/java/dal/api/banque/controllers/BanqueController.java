@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dal.api.banque.exceptions.StockException;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
@@ -110,7 +111,11 @@ public class BanqueController {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
-        account.setStock(accountService.transform(account, produitFini));
+        try {
+            account.setStock(accountService.transform(account, produitFini));
+        } catch (StockException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);
