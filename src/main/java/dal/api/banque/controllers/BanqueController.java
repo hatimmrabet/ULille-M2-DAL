@@ -24,7 +24,6 @@ import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
 import dal.api.banque.services.ClientService;
 
-
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/bank")
@@ -40,7 +39,6 @@ public class BanqueController {
     private ClientService clientService;
 
     Logger logger = LoggerFactory.getLogger(BanqueController.class);
-
 
     /**
      * Avoir les informations de notre banque
@@ -58,7 +56,10 @@ public class BanqueController {
         return banqueService.createBanque();
     }
 
-    /* *********************************************************************************************************** */
+    /*
+     * *****************************************************************************
+     * ******************************
+     */
 
     /**
      * Le detail d'un compte
@@ -69,13 +70,11 @@ public class BanqueController {
             @PathParam("name") String name) {
         logger.info("Recuperation de compte " + name);
         Account account = accountService.getAccount(name);
-        if (account == null)
-        {
+        if (account == null) {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        if (!accountService.checkPassword(name, password))
-        {
+        if (!accountService.checkPassword(name, password)) {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
@@ -88,8 +87,7 @@ public class BanqueController {
     @PostMapping("/account")
     public ResponseEntity<?> addAccounts(@RequestBody AccountEntry accountEntry) {
         logger.info("Creation de compte " + accountEntry.getName());
-        if (accountService.checkIfAccountExistsByName(accountEntry.getName()))
-        {
+        if (accountService.checkIfAccountExistsByName(accountEntry.getName())) {
             logger.info("Compte " + accountEntry.getName() + " existe deja");
             return ResponseEntity.badRequest().body("Account already exists");
         }
@@ -99,7 +97,10 @@ public class BanqueController {
         return ResponseEntity.status(201).body(account);
     }
 
-    /* *********************************************************************************************************** */
+    /*
+     * *****************************************************************************
+     * ******************************
+     */
 
     /**
      * Transformer un produit vers un autre
@@ -108,15 +109,13 @@ public class BanqueController {
     public ResponseEntity<?> transform(@RequestHeader("password") String password,
             @PathParam("name") String name,
             @RequestBody Stock stock) {
-        logger.info("Transformation du produit "+stock.getType()+", qty: "+stock.getQuantity()+" de "+name);
+        logger.info("Transformation du produit " + stock.getType() + ", qty: " + stock.getQuantity() + " de " + name);
         Account account = accountService.getAccount(name);
-        if (account == null)
-        {
+        if (account == null) {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        if (!accountService.checkPassword(name, password))
-        {
+        if (!accountService.checkPassword(name, password)) {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
@@ -126,32 +125,35 @@ public class BanqueController {
         return ResponseEntity.ok().body(account);
     }
 
-
     @GetMapping("/stock")
     public ResponseEntity<?> stocksDuFournisseur(@PathParam("name") String name) {
-        logger.info("Recuperation du stock de "+name);
+        logger.info("Recuperation du stock de " + name);
         Account account = accountService.getAccount(name);
         if (account == null) {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
         JSONObject json = clientService.extraction(account.getName());
-        logger.info("Stock recupere, size stock : "+account.getStock().size());
+        logger.info("Stock recupere, size stock : " + account.getStock().size());
         return ResponseEntity.ok().body(json.toMap());
     }
-    
 
     @PutMapping("/exchange")
     public ResponseEntity<?> echangerStock(@PathParam("name") String name, @RequestBody Stock stock) {
         logger.info("Echange du stock de " + name);
+        logger.info("Stock : " + stock.getType() + ", qty: " + stock.getQuantity());
         Account account = accountService.getAccount(name);
         if (account == null) {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        accountService.exchange(account, stock);
-        logger.info("Stock changé : " + account.getStock().size());
-        return ResponseEntity.ok().body(account.getStock());
+        if(accountService.exchange(account, stock)) {
+            logger.info("Echange du stock effectue");
+            return ResponseEntity.ok().body(clientService.extraction(name).toMap());
+        } else {
+            logger.info("Echange du stock echoue");
+            return ResponseEntity.badRequest().body("Echange echoue, quantite insuffisante");
+        }
     }
 
 }

@@ -7,16 +7,15 @@ import java.util.Random;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.repositories.AccountRepository;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class AccountService {
@@ -180,16 +179,16 @@ public class AccountService {
     }
 
     public boolean exchange(Account account, Stock stock) {
+        int qtyAEnlever = Math.abs(stock.getQuantity());
         if (account != null) {
             Stock AccountStock = account.getStock().stream().filter(s -> s.getType().equals(stock.getType())).findFirst().orElse(null);
             if (AccountStock != null) {
-                if (AccountStock.getQuantity() >= stock.getQuantity()) {
-                    AccountStock.setQuantity(AccountStock.getQuantity() - stock.getQuantity());
+                if (AccountStock.getQuantity() >= qtyAEnlever) {
+                    AccountStock.setQuantity(AccountStock.getQuantity() - qtyAEnlever);
                     accountRepository.save(account);
                     return true;
                 }
             }
-
         }
         return false;
     }
