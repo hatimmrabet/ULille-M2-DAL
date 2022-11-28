@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dal.api.banque.exceptions.StockException;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
+import dal.api.banque.models.entry.BuyEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
 import dal.api.banque.services.ClientService;
@@ -55,11 +57,6 @@ public class BanqueController {
     public Banque addBanque() {
         return banqueService.createBanque();
     }
-
-    /*
-     * *****************************************************************************
-     * ******************************
-     */
 
     /**
      * Le detail d'un compte
@@ -97,11 +94,6 @@ public class BanqueController {
         return ResponseEntity.status(201).body(account);
     }
 
-    /*
-     * *****************************************************************************
-     * ******************************
-     */
-
     /**
      * Transformer un produit vers un autre
      */
@@ -119,7 +111,11 @@ public class BanqueController {
             logger.info("Mot de passe incorrect");
             return ResponseEntity.badRequest().body("Wrong password");
         }
-        account.setStock(accountService.transform(account, produitFini));
+        try {
+            account.setStock(accountService.transform(account, produitFini));
+        } catch (StockException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         accountService.saveAccount(account);
         logger.info("Transformation du produit effectuee");
         return ResponseEntity.ok().body(account);
@@ -156,6 +152,12 @@ public class BanqueController {
             logger.info("Echange du stock echoue");
             return ResponseEntity.badRequest().body("Echange echoue, quantite insuffisante");
         }
+    }
+
+    @PostMapping("/buy")
+    public ResponseEntity<Boolean> buy(@PathParam("name") String name, @RequestBody BuyEntry buyEntry) {
+        return ResponseEntity.ok().body(clientService.buy(name, buyEntry));
+
     }
 
 }
