@@ -55,7 +55,6 @@ public class ClientService {
         }
         accountJson.put("stock", stockJson);
         accountJson.put("money", account.getMoney());
-    
         logger.info("Fin extraction");
         return accountJson;
     }
@@ -88,7 +87,7 @@ public class ClientService {
         logger.info("Details of the transaction: fournisseur: " + fournisseur +" produit: " + produit + " qty: " + quantite + " prix: " + prix);
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
-
+        logger.info("Fin paiement");
         return true;
     }
 
@@ -102,9 +101,7 @@ public class ClientService {
         //update the account
         double priceOfStock =stockService.getStocks().stream().filter(stock -> stock.getType().equals(buyEntry.getType())).findFirst().get().getPrice();
         double feeOfProduct = (buyEntry.getQuantity()*priceOfStock*account.getFee()/100);
-        System.out.println(feeOfProduct);
         double total = (buyEntry.getQuantity()*priceOfStock)+feeOfProduct;
-
         account.setMoney(account.getMoney()-total);
         banque.setCapital(banque.getCapital()+ feeOfProduct);
         //update the stock
@@ -112,7 +109,6 @@ public class ClientService {
         stock.setQuantity((int) stock.getQuantity()+buyEntry.getQuantity());
         accountService.saveAccount(account);
         banqueService.saveBanque(banque);
-        logger.info("Fin paiement");
         return true;
     }
 }

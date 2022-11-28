@@ -8,11 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import dal.api.banque.models.entry.BuyEntry;
 import dal.api.banque.services.ClientService;
 
 @RestController
@@ -33,10 +30,4 @@ public class ClientController {
         return ResponseEntity.ok().body(clientService.paiement(fournisseur,produit,qte,prix));
     }
 
-    @PostMapping("/buy")
-        public ResponseEntity<Boolean> buy(@PathParam("name") String name, @RequestBody BuyEntry buyEntry) {
-            System.out.println(buyEntry.getQuantity());
-            return ResponseEntity.ok().body(clientService.buy(name, buyEntry));
-
-        }
 }

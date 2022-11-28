@@ -20,6 +20,7 @@ import dal.api.banque.models.Account;
 import dal.api.banque.models.Banque;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
+import dal.api.banque.models.entry.BuyEntry;
 import dal.api.banque.services.AccountService;
 import dal.api.banque.services.BanqueService;
 import dal.api.banque.services.ClientService;
@@ -146,6 +147,12 @@ public class BanqueController {
             logger.info("Echange du stock echoue");
             return ResponseEntity.badRequest().body("Echange echoue, quantite insuffisante");
         }
+    }
+
+    @PostMapping("/buy")
+    public ResponseEntity<Boolean> buy(@PathParam("name") String name, @RequestBody BuyEntry buyEntry) {
+        return ResponseEntity.ok().body(clientService.buy(name, buyEntry));
+
     }
 
 }
