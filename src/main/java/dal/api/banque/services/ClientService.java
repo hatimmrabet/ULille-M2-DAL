@@ -36,17 +36,28 @@ public class ClientService {
         List<Account> accounts = accountService.getAccounts();
         Map<String,Map<String,?>> accountMap= new HashMap<>();
         for(Account account : accounts) {
-            JSONObject accountJson = new JSONObject();
-            for(Stock stock : account.getStock()) {
-                accountJson.put(stock.getType(), stock.getQuantity());
-            }
-            accountJson.put("compte", account.getMoney());
+            JSONObject accountJson = extraction(account.getName());
             accountMap.put(account.getName(), accountJson.toMap());
         }
         logger.info("Available accounts: " + accountMap.size());
         logger.info("Fin extraction");
         return accountMap;
+    }
 
+    public JSONObject extraction(String name) {
+        logger.info("Debut extraction pour le compte " + name);
+        // send account information as hsahmap to client
+        Account account = accountService.getAccount(name);
+        JSONObject accountJson = new JSONObject();
+        JSONObject stockJson = new JSONObject();
+        for (Stock stock : account.getStock()) {
+            stockJson.put(stock.getType(), stock.getQuantity());
+        }
+        accountJson.put("stock", stockJson);
+        accountJson.put("money", account.getMoney());
+    
+        logger.info("Fin extraction");
+        return accountJson;
     }
 
     public Boolean paiement(String fournisseur, String produit, int quantite,double prix) {
