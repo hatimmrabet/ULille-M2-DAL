@@ -1,9 +1,14 @@
 package dal.api.banque.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +16,7 @@ import dal.api.banque.models.Account;
 import dal.api.banque.models.Stock;
 import dal.api.banque.models.entry.AccountEntry;
 import dal.api.banque.repositories.AccountRepository;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class AccountService {
@@ -122,23 +128,69 @@ public class AccountService {
         for(Stock rulesStock : stockService.getRulesForProduct(stock.getType())) {
             for(Stock accountStock : account.getStock()) {
                 if(rulesStock.getType().equals(accountStock.getType())) {
-                    accountStock.setQuantity(accountStock.getQuantity() - (rulesStock.getQuantity() * stock.getQuantity()));
+                    if (accountStock.getQuantity() < rulesStock.getQuantity() * stock.getQuantity()) {// si on a pas assez de ressources
+                        int diffStock = rulesStock.getQuantity() * stock.getQuantity() - accountStock.getQuantity();
+                        String ip = findCorrectStockInBank(account, rulesStock.getType(),diffStock);// trouver le stock dans une autre banque
+                        if(ip != null) {
+                                // exchange request on other bank
+                            Stock updateStock = new Stock(rulesStock.getType(), diffStock, rulesStock.getPrice());// stock to update
+                            String url = "http://" + ip + "/bank/exchange"+ "?name=" + account.getName();
+                            HttpEntity<Stock> request = new HttpEntity<>(updateStock);
+                            RestTemplate restTemplate = new RestTemplate();
+                            restTemplate.exchange(url, org.springframework.http.HttpMethod.PUT, request, JSONObject.class);
+                            accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
+                            Stock stocktoreduce = account.getStock().stream().filter(s -> s.getType().equals(rulesStock.getType())).findFirst().get();
+                            stocktoreduce.setQuantity(0);
+
+                        } else {
+                            return null;
+                        }
+
+                    }
                 }
             }
         }
         // ajouter le stock produit
-        for(Stock accountStock : account.getStock()) {
-            if(accountStock.getType().equals(stock.getType())) {
-                accountStock.setQuantity(accountStock.getQuantity() + stock.getQuantity());
-            }
-        }
+
         return account.getStock();
     }
 
+    public String findCorrectStockInBank(Account account, String type, int quantity) {
+        RestTemplate restTemplate = new RestTemplate();
+        HashMap<String, String> ipBank = BanqueService.banques_ip;
+        //request each bank
+        for(String ip : ipBank.keySet()){
+            String url = "http://" + ip + "/bank/stock?name=" + account.getName();
+            try{
+                ResponseEntity<JSONObject> response = restTemplate.getForEntity(url, JSONObject.class);
+                JSONObject json = response.getBody();
+                if(json != null){
+                    if(json.has(type)){
+                        int quantityInBank = json.getInt("quantity");
+                        if(quantityInBank >= quantity){
+                            return ip;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Error");
+            }
+        }
+        return null;
+    }
 
-    public List<Stock> echangerStock(Account account, Stock stock) {
-        Stock stockAccount = account.getStock().stream().filter(s -> s.getType().equals(stock.getType())).findFirst().get();
-        stockAccount.setQuantity(stockAccount.getQuantity() + stock.getQuantity());
-        return account.getStock();
+    public boolean exchange(Account account, Stock stock) {
+        if (account != null) {
+            Stock AccountStock = account.getStock().stream().filter(s -> s.getType().equals(stock.getType())).findFirst().orElse(null);
+            if (AccountStock != null) {
+                if (AccountStock.getQuantity() >= stock.getQuantity()) {
+                    AccountStock.setQuantity(AccountStock.getQuantity() - stock.getQuantity());
+                    accountRepository.save(account);
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 }

@@ -148,9 +148,7 @@ public class BanqueController {
             logger.info("Compte " + name + " n'existe pas");
             return ResponseEntity.badRequest().body("Account not found");
         }
-        account.setStock(accountService.echangerStock(account, stock));
-
-
+        accountService.exchange(account, stock);
         logger.info("Stock changé : " + account.getStock().size());
         return ResponseEntity.ok().body(account.getStock());
     }

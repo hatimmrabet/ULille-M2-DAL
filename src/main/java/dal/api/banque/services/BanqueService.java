@@ -17,7 +17,7 @@ import dal.api.banque.utils.FileManager;
 public class BanqueService {
 
     public static final String BANQUE_ID = "14";
-    public HashMap<String, String> banques_ip = new HashMap<String, String>();
+    public static HashMap<String, String> banques_ip = new HashMap<String, String>();
 
     @Autowired
     private BanqueRepository banqueRepository;
