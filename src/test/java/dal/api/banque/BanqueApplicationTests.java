@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import dal.api.banque.exceptions.StockException;
 import dal.api.banque.models.Account;
 import dal.api.banque.models.Quotation;
 import dal.api.banque.models.Status;
@@ -77,7 +78,7 @@ class BanqueApplicationTests {
 	}
 
 	@Test
-	void testTransformation() {
+	void testTransformation() throws StockException {
 		Account entry = accountService.getAccount("test");
 		// check if have 10 products
 		assertTrue(entry.getStock().size() == 10);
