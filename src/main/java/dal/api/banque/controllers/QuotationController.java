@@ -53,6 +53,10 @@ public class QuotationController {
             @RequestBody QuotationEntry quotationEntry, 
             @RequestParam String buyer,
             @RequestParam String seller) {
+        if (buyer.trim().equals(seller.trim())) {
+            logger.info("Le vendeur et l'acheteur ne peuvent pas etre les memes");
+            return ResponseEntity.badRequest().body("Le vendeur et l'acheteur ne peuvent pas etre les memes");
+        }
         Account account = accountService.getAccount(seller);
         if (account == null )
         {
@@ -84,7 +88,8 @@ public class QuotationController {
     public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody String status) {
         logger.info("Validation de quotation " + id);
         if (quotationService.checkIfQuotationExistsById(id)) {
-            if (quotationService.getQuotation(id).getStatus() == Status.PENDING) {
+            Quotation quotation = quotationService.getQuotation(id);
+            if (quotation.getStatus() == Status.PENDING) {
                 if (new JSONObject(status).getBoolean("status")) {
                     quotationService.validateQuotation(id);
                     return ResponseEntity.ok().body("Quotation validated");
@@ -92,10 +97,10 @@ public class QuotationController {
                     quotationService.refuseQuotation(id);
                     return ResponseEntity.ok().body("Quotation refused");
                 }
-            } else if (quotationService.getQuotation(id).getStatus() == Status.ACCEPTED) {
+            } else if (quotation.getStatus() == Status.ACCEPTED) {
                 logger.info("Quotation " + id + " already accepted");
                 return ResponseEntity.badRequest().body("Quotation already validated");
-            } else if (quotationService.getQuotation(id).getStatus() == Status.REFUSED) {
+            } else if (quotation.getStatus() == Status.REFUSED) {
                 logger.info("Quotation " + id + " already refused");
                 return ResponseEntity.badRequest().body("Quotation already refused");
             }
