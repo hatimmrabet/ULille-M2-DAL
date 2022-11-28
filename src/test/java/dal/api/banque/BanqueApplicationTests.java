@@ -81,18 +81,24 @@ class BanqueApplicationTests {
 		Account entry = accountService.getAccount("test");
 		// check if have 10 products
 		assertTrue(entry.getStock().size() == 10);
-		Stock chaise = new Stock("chaise", 100, 100);
+		Stock chaise = new Stock("chaise", 3, 100);
+		// ajouter les ressources
+		for (Stock ressource : stockService.getRulesForProduct(chaise.getType())) {
+			ressource.setPrice(entry.getStock(ressource.getType()).getPrice());
+			ressource.setQuantity(ressource.getQuantity() * chaise.getQuantity());
+			entry.addStock(ressource);
+		}
 		accountService.transform(entry, chaise);
 		// check balance didn't change
 		assertTrue(entry.getMoney() == 1000);
 		// check stock quantity changed
 		for (Stock s : entry.getStock()) {
 			if (s.getType().equals(chaise.getType())) {
-				assertTrue(s.getQuantity() == 100);
+				assertTrue(s.getQuantity() == 3);
 			} else {
 				for (Stock ressource : stockService.getRulesForProduct(chaise.getType())) {
 					if (s.getType().equals(ressource.getType())) {
-						assertTrue(s.getQuantity() == -ressource.getQuantity() * chaise.getQuantity());
+						assertTrue(s.getQuantity() == 0);
 						break;
 					}
 				}
