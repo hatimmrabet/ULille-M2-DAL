@@ -1,14 +1,16 @@
 package dal.api.banque.models;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "quotations")
 public class Quotation
-{
-    @Id
-    private String id;
+{   
+    @Id 
+    private long id;
     @DBRef
     private Account seller;
     @DBRef
@@ -20,11 +22,11 @@ public class Quotation
     private Status status;
 
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

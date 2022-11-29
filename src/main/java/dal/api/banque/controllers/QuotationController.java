@@ -37,7 +37,7 @@ public class QuotationController {
     Logger logger = LoggerFactory.getLogger(QuotationController.class);
 
     @GetMapping("/{id}")
-    public ResponseEntity<Quotation> getQuotation(@PathVariable String id) {
+    public ResponseEntity<Quotation> getQuotation(@PathVariable Long id) {
         logger.info("Recuperation de quotation " + id);
         Quotation quotation = quotationService.getQuotation(id);
         if (quotation != null) {
@@ -86,7 +86,7 @@ public class QuotationController {
 
     @PostMapping
     @RequestMapping("/{id}")
-    public ResponseEntity<?> validateQuotation(@PathVariable String id, @RequestBody String status) {
+    public ResponseEntity<?> validateQuotation(@PathVariable Long id, @RequestBody String status) {
         logger.info("Validation de quotation " + id);
         if (quotationService.checkIfQuotationExistsById(id)) {
             Quotation quotation = quotationService.getQuotation(id);
