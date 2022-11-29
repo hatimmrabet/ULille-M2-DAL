@@ -21,6 +21,8 @@ import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.repositories.AccountRepository;
 import dal.api.banque.repositories.BanqueRepository;
 import dal.api.banque.repositories.QuotationRepository;
+
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -171,11 +173,15 @@ public class QuotationService {
         if(ipFournisseur != null) {
             String url = "http://" + ipFournisseur + "/fournisseur/devis/valide?idDevis=" + id;
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                logger.info("Fournisseur notified");
-            } else {
-                logger.error("Erreur lors de la notification du fournisseur");
+            try {
+                ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    logger.info("Fournisseur notified");
+                } else {
+                    logger.error("Bad response from fournisseur when notifying");
+                }
+            } catch (RestClientException e) {
+                logger.error("Erreur lors de la notification du seller: "+e.getMessage());
             }
         }
         else {
