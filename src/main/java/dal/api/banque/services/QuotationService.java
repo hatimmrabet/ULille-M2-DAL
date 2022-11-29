@@ -161,6 +161,17 @@ public class QuotationService {
         accountRepository.save(seller);
         banqueRepository.save(banque);
         logger.info("Transaction completed");
+        //GET /fournisseur/devis/valide?idDevis={id}
+        String ipFournisseur = BanqueService.fournisseurs_ip.get(seller.getName());
+        String url = "http://" + ipFournisseur + "/fournisseur/devis/valide?idDevis=" + id;
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Fournisseur notified");
+        } else {
+            logger.error("Erreur lors de la notification du fournisseur");
+        }
+
         return true;
     }
 
