@@ -43,13 +43,18 @@ public class QuotationService {
 
     Logger logger = LoggerFactory.getLogger(QuotationService.class);
 
-    public Quotation getQuotation(String id) {
+    public Quotation getQuotation(Long id) {
         return quotationRepository.findById(id).isPresent() ? quotationRepository.findById(id).get() : null;
+    }
+
+    public long getNextId() {
+        return quotationRepository.count() + 1;
     }
 
     public Quotation createQuotation(QuotationEntry quotationEntry, String seller, String buyer) {
         logger.info("Creating quotation for seller: " + seller + " and buyer: " + buyer);
         Quotation quotation = convertQuotationEntryToQuotation(quotationEntry, seller, buyer);
+        quotation.setId(getNextId());
         int fee = accountRepository.findByName(buyer).getFee();
         List<Stock> stocks = quotationEntry.getCart();
         double totalHT = stocks.get(0).getPrice()*stocks.get(0).getQuantity();
@@ -69,7 +74,7 @@ public class QuotationService {
         return quotation;
     }
 
-    public boolean checkIfQuotationExistsById(String id) {
+    public boolean checkIfQuotationExistsById(Long id) {
         return quotationRepository.existsById(id);
     }
 
@@ -90,7 +95,7 @@ public class QuotationService {
         return response;
     }
 
-    public boolean validateQuotation(String id) throws StockException {
+    public boolean validateQuotation(Long id) throws StockException {
         logger.info("Validating quotation with id: " + id);
         Quotation quotation = quotationRepository.findById(id).get();
         if (quotation.getStatus().equals(Status.PENDING)) {
@@ -103,7 +108,7 @@ public class QuotationService {
         return false;
     }
 
-    public boolean refuseQuotation(String id) {
+    public boolean refuseQuotation(Long id) {
         Quotation quotation = quotationRepository.findById(id).get();
         if (quotation.getStatus().equals(Status.PENDING)) {
             quotation.setStatus(Status.REFUSED);
@@ -114,7 +119,7 @@ public class QuotationService {
         return false;
     }
 
-    public boolean createTransaction(String id) throws StockException {
+    public boolean createTransaction(Long id) throws StockException {
         logger.info("Creating transaction for quotation with id: " + id);
         Quotation quotation = quotationRepository.findById(id).get();
         Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
@@ -162,7 +167,6 @@ public class QuotationService {
         banqueRepository.save(banque);
         logger.info("Transaction completed");
         //GET /fournisseur/devis/valide?idDevis={id}
-
         String ipFournisseur = BanqueService.fournisseurs_ip.get(seller.getName());
         if(ipFournisseur != null) {
             String url = "http://" + ipFournisseur + "/fournisseur/devis/valide?idDevis=" + id;
