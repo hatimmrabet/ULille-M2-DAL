@@ -2,10 +2,14 @@ package dal.api.banque.services;
 
 import java.util.List;
 
+import dal.api.banque.exceptions.StockException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import dal.api.banque.models.Account;
@@ -17,6 +21,7 @@ import dal.api.banque.models.entry.QuotationEntry;
 import dal.api.banque.repositories.AccountRepository;
 import dal.api.banque.repositories.BanqueRepository;
 import dal.api.banque.repositories.QuotationRepository;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class QuotationService {
@@ -85,7 +90,7 @@ public class QuotationService {
         return response;
     }
 
-    public boolean validateQuotation(String id) {
+    public boolean validateQuotation(String id) throws StockException {
         Quotation quotation = quotationRepository.findById(id).get();
         if (quotation.getStatus().equals(Status.PENDING)) {
             quotation.setStatus(Status.ACCEPTED);
@@ -108,12 +113,43 @@ public class QuotationService {
         return false;
     }
 
-    public boolean createTransaction(String id) {
+    public boolean createTransaction(String id) throws StockException {
         logger.info("Creating transaction for quotation with id: " + id);
         Quotation quotation = quotationRepository.findById(id).get();
         Account buyer = accountRepository.findByName(quotation.getBuyer().getName());
         Account seller = accountRepository.findByName(quotation.getSeller().getName());
         logger.info("Buyer: " + buyer.getName() + " and seller: " + seller.getName());
+        Stock sellerStock = seller.getStock().stream().filter(stock -> stock.getType().equals(quotation.getCart().get(0).getType())).findFirst().get();
+        int qtyNecessaire = quotation.getCart().get(0).getQuantity();
+    // si on a pas assez de ressources
+
+        if (sellerStock.getQuantity() < qtyNecessaire) {
+            int diffStock = qtyNecessaire - sellerStock.getQuantity();
+            // trouver le stock dans une autre banque
+            String ip = accountService.findCorrectStockInBank(seller, quotation.getCart().get(0).toString(), diffStock);
+            if (ip != null) {
+                // stock to update in the other bank
+                Stock updateStock = new Stock(sellerStock.getType(), diffStock, 0);
+                String url = "http://" + ip + "/bank/exchange" + "?name=" + seller.getName();
+                HttpEntity<Stock> request = new HttpEntity<>(updateStock);
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request,
+                        String.class);
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    logger.info("Stock modifie dans une autre banque");
+                    // on ajoute le stock dans notre banque
+                    seller.addStock(updateStock);
+                    logger.info("Stock ajoute dans notre banque");
+                } else {
+                    logger.error("Erreur lors de la modification du stock dans une autre banque");
+                }
+            } else {
+                // si on a pas trouvé de stock dans une autre banque
+                logger.info("Pas assez de stock pour " + sellerStock.getType() + " dans toutes les banques");
+                throw new StockException("Pas assez de stock pour " + sellerStock.getType() + " dans toutes les banques");
+            }
+        }
+
         buyer.setMoney(buyer.getMoney() - quotation.getTTC());
         seller.setMoney(seller.getMoney() + quotation.getHT());
         logger.info("Buyer balance: " + buyer.getMoney() + " and seller balance: " + seller.getMoney());

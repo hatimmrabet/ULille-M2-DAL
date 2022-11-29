@@ -147,11 +147,15 @@ class BanqueApplicationTests {
 		for (Stock s : accountService.getAccount("test").getStock()) {
 			assertTrue(s.getQuantity() == 0);
 		}
+		// add 5 chairs to seller
+		Stock chaise2 = new Stock("chaise", 5, 100);
+		accountService.getAccount("test").addStock(chaise2);
 	}
 
 	@Test
-	void testTransaction() {
+	void testTransaction() throws StockException {
 		Quotation qot = quotationRepository.findAll().get(0);
+
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
 		assertEquals(accountService.getAccount(qot.getSeller().getName()).getMoney(),
