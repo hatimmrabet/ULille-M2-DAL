@@ -150,7 +150,13 @@ class BanqueApplicationTests {
 	}
 
 	@Test
-	void testTransaction() {
+	void testTransaction() throws StockException {
+		// ajouter des chaises
+		Stock stock = new Stock("chaise", 3, 100);
+		Account seller = accountService.getAccount("test2");
+		seller.addStock(stock);
+		accountService.saveAccount(seller);
+		// test valid transaction
 		Quotation qot = quotationRepository.findAll().get(0);
 		assertNotNull(qot);
 		quotationService.validateQuotation(qot.getId());
