@@ -19,6 +19,8 @@ public class BanqueService {
     public static final String BANQUE_ID = "14";
     public static HashMap<String, String> banques_ip = new HashMap<String, String>();
 
+    public static HashMap<String, String> fournisseurs_ip = new HashMap<String, String>();
+
     @Autowired
     private BanqueRepository banqueRepository;
 
@@ -27,8 +29,12 @@ public class BanqueService {
 
     public BanqueService() {
         JSONObject obj = new JSONObject(FileManager.getFileContent("static-bank-ip.json"));
+        JSONObject fournisseurs = new JSONObject(FileManager.getFileContent("static-fournisseur-ip.json"));
         for (String key : obj.keySet()) {
             banques_ip.put(key, obj.getString(key));
+        }
+        for (String key : fournisseurs.keySet()) {
+            fournisseurs_ip.put(key, fournisseurs.getString(key));
         }
     }
 
