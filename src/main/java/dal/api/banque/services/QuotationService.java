@@ -91,6 +91,7 @@ public class QuotationService {
     }
 
     public boolean validateQuotation(String id) throws StockException {
+        logger.info("Validating quotation with id: " + id);
         Quotation quotation = quotationRepository.findById(id).get();
         if (quotation.getStatus().equals(Status.PENDING)) {
             quotation.setStatus(Status.ACCEPTED);
@@ -121,12 +122,11 @@ public class QuotationService {
         logger.info("Buyer: " + buyer.getName() + " and seller: " + seller.getName());
         Stock sellerStock = seller.getStock().stream().filter(stock -> stock.getType().equals(quotation.getCart().get(0).getType())).findFirst().get();
         int qtyNecessaire = quotation.getCart().get(0).getQuantity();
-    // si on a pas assez de ressources
-
+        // si on a pas assez de ressources
         if (sellerStock.getQuantity() < qtyNecessaire) {
             int diffStock = qtyNecessaire - sellerStock.getQuantity();
             // trouver le stock dans une autre banque
-            String ip = accountService.findCorrectStockInBank(seller, quotation.getCart().get(0).toString(), diffStock);
+            String ip = accountService.findCorrectStockInBank(seller, quotation.getCart().get(0).getType(), diffStock);
             if (ip != null) {
                 // stock to update in the other bank
                 Stock updateStock = new Stock(sellerStock.getType(), diffStock, 0);
